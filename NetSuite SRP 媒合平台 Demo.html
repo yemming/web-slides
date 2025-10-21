@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite SRP 互動式 Demo | 設計師媒合平台篇</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Teal accent -->
+    <!-- Application Structure Plan: This application mirrors the successful interactive dashboard structure of the first demo but is tailored to a service-oriented workflow. A top stepper guides the user through the four stages of the client journey (Lead, Matching, Monitoring, Closing). This structure is ideal for demonstrating a longer, more relationship-focused sales and service cycle. Interactive elements in each stage visualize key NetSuite SRP strengths: the CRM-to-project pipeline, service hour tracking, long-term cost accumulation, and final ROI calculation, making abstract service metrics tangible. -->
+    <!-- Visualization & Content Choices:
+        - Pain Points: Used interactive cards with hover effects to highlight common service industry challenges.
+        - Stage 1 (Lead Gen): Report Info: CRM Integration -> Goal: Show seamless lead-to-project flow -> Viz: HTML/CSS Kanban-style pipeline -> Interaction: Button click animates a lead card moving across stages -> Justification: Visually represents the abstract concept of CRM integration in a familiar, intuitive way.
+        - Stage 2 (Matching): Report Info: Consultant Time Tracking -> Goal: Demonstrate service cost capture -> Viz: Dynamic list with a progress bar -> Interaction: Buttons simulate logging consultant hours, which updates the total -> Justification: Directly addresses the challenge of quantifying service-based work.
+        - Stage 3 (Monitoring): Report Info: Long-term Cost Tracking -> Goal: Visualize cost accumulation -> Viz: Line Chart (Chart.js) -> Interaction: Buttons add costs over time, updating the chart -> Justification: A line chart is the best tool to show trends and cumulative data over a project's lifecycle.
+        - Stage 4 (Closing): Report Info: ROI Calculation & Content Loop -> Goal: Highlight business outcomes and strategic value -> Viz: KPI cards & a CTA button -> Interaction: Button click reveals ROI and confirms conversion to a new project type -> Justification: Provides a strong conclusion demonstrating both financial success and the synergetic loop back to the media business. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F8F9FA;
+            color: #343A40;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .step {
+            transition: all 0.3s ease;
+        }
+        .step-active {
+            background-color: #0D9488 !important; /* Teal */
+            color: white !important;
+            border-color: #0D9488 !important;
+        }
+        .kanban-card {
+            transition: all 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">NetSuite SRP 如何優化「幸福空間」媒合平台</h1>
+            <p class="mt-2 text-lg md:text-xl text-teal-600 font-medium">從客戶旅程到服務價值的完整實現</p>
+        </header>
+
+        <section id="pain-points" class="mb-16">
+            <h2 class="text-2xl font-bold text-center mb-8 text-gray-700">服務導向業務的「隱形成本」</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+                    <h3 class="font-bold text-lg text-red-600 mb-2">客戶資訊斷層？</h3>
+                    <p class="text-gray-600">銷售(CRM)和專案(PM)是兩個世界，客戶需求在交接中遺失，服務體驗不連貫。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+                    <h3 class="font-bold text-lg text-yellow-600 mb-2">顧問的時間值多少錢？</h3>
+                    <p class="text-gray-600">服務成本難以量化，每次媒合投入多少顧問工時是一筆糊塗帳。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+                    <h3 class="font-bold text-lg text-purple-600 mb-2">專案是賺是賠，年底才知道？</h3>
+                    <p class="text-gray-600">長期服務專案的投入產出比(ROI)無法即時追蹤，決策缺乏數據支持。</p>
+                </div>
+            </div>
+        </section>
+
+        <main id="interactive-dashboard" class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
+            <h2 class="text-2xl font-bold text-center mb-2 text-gray-800">設計師媒合顧問服務：客戶旅程儀表板</h2>
+            <p class="text-center text-gray-500 mb-8">點擊下方階段，體驗從潛在客戶到成功案例的完整旅程。</p>
+            
+            <nav id="stepper" class="flex items-center justify-center space-x-2 md:space-x-4 mb-8">
+                <button data-stage="1" class="step step-active flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">1. 客戶開發</button>
+                <div class="flex-1 h-px bg-gray-300 hidden md:block"></div>
+                <button data-stage="2" class="step flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">2. 匹配提案</button>
+                 <div class="flex-1 h-px bg-gray-300 hidden md:block"></div>
+                <button data-stage="3" class="step flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">3. 監管支援</button>
+                 <div class="flex-1 h-px bg-gray-300 hidden md:block"></div>
+                <button data-stage="4" class="step flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">4. 結案轉化</button>
+            </nav>
+
+            <div id="stage-content">
+            </div>
+        </main>
+        
+    </div>
+
+    <script>
+        const stageData = {
+            '1': {
+                title: '階段一：客戶開發與需求分析',
+                subtitle: '從潛在客戶到專案的無縫接軌',
+                painPoint: '銷售團隊辛苦開發的客戶資料，轉到專案團隊時常需要重複溝通，資訊斷層造成客戶體驗不佳。',
+                solution: '與 NetSuite CRM 模組完美整合，從潛在客戶(Lead)階段就開始追蹤，所有溝通紀錄都在同一個系統，轉換成專案後資料無縫接軌。',
+                demoPoint: '「我們來看看，一個新的線上諮詢進來後，業務顧問如何在 CRM 中跟進，並在確認需求後，一鍵將這個潛在客戶轉換成一個新的服務專案。」',
+                activities: ['線上/線下諮詢', '客戶需求訪談', '建立客戶檔案(CRM)'],
+                customHTML: `
+                    <div class="w-full max-w-4xl mx-auto text-center">
+                        <h4 class="font-bold text-center mb-4">客戶開發流程看板</h4>
+                        <div class="grid grid-cols-3 gap-4 p-4 bg-gray-100 rounded-lg">
+                            <div>
+                                <h5 class="font-semibold text-gray-600 mb-2">潛在客戶 (Lead)</h5>
+                                <div id="col-1" class="min-h-[100px] rounded">
+                                    <div id="lead-card" class="kanban-card bg-white p-3 rounded shadow">陳先生 - 北投區新屋</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-600 mb-2">需求確認 (Qualified)</h5>
+                                <div id="col-2" class="min-h-[100px] rounded"></div>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-600 mb-2">新專案 (Project)</h5>
+                                <div id="col-3" class="min-h-[100px] rounded"></div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <button id="convert-btn" onclick="convertToProject()" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">將客戶轉為專案</button>
+                        </div>
+                    </div>
+                `
+            },
+            '2': {
+                title: '階段二：設計師匹配與提案',
+                subtitle: '讓每一次的服務都有價',
+                painPoint: '媒合過程投入大量顧問時間進行溝通、篩選、安排會議，這些隱性的服務成本常常被忽略，無法成為計費或績效評估的依據。',
+                solution: '可以記錄每次媒合投入的顧問工時，如果未來要跟設計師或屋主收費，這些都是計費依據。精準計算專案的真實人力成本。',
+                demoPoint: '「在這個階段，顧問需要花費大量時間。讓我們模擬一下顧問如何輕鬆記錄他的工時，而主管又如何能即時看到這個專案已經投入了多少人力成本。」',
+                activities: ['內部資料庫篩選', '聯繫設計公司', '安排三方會談', '協助審閱提案'],
+                customHTML: `
+                    <div class="w-full max-w-2xl mx-auto">
+                        <h4 class="font-bold text-center mb-4">顧問工時記錄</h4>
+                        <div class="bg-white p-4 rounded-lg shadow-inner">
+                            <div id="task-list">
+                                <div class="flex justify-between items-center py-2 border-b"><span>篩選設計師 (2 小時)</span><span class="text-gray-500">已記錄</span></div>
+                                <div class="flex justify-between items-center py-2 border-b"><span>與陳先生會議 (3 小時)</span><span class="text-gray-500">已記錄</span></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-right">
+                             <p class="text-lg font-bold">總計投入工時: <span id="total-hours" class="text-teal-600">5</span> 小時</p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button onclick="logHours(4, '安排三方會談')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">記錄：安排會談 (4hr)</button>
+                            <button onclick="logHours(2, '審閱提案')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm ml-2">記錄：審閱提案 (2hr)</button>
+                        </div>
+                    </div>
+                `
+            },
+            '3': {
+                title: '階段三：設計與施工階段監管',
+                subtitle: '長期服務，成本清晰可見',
+                painPoint: '專案週期長，跨越數月甚至一年。期間零散的客服、諮詢、進度追蹤等服務成本，如果沒有系統性記錄，最終會變成一筆算不清的糊塗帳。',
+                solution: '這是一個長期的服務過程，所有投入的服務時間和資源成本都能持續累積在專案中，讓管理者清楚看到每個客戶的「服務成本」。',
+                demoPoint: '「隨著專案進展，我們的服務是不間斷的。讓我們看看，當顧問接到客戶的諮詢電話或去了一趟工地後，這些服務成本如何累積，並反映在專案的總成本曲線上。」',
+                activities: ['定期進度追蹤', '協助解決客訴', '提供附加服務'],
+                chartType: 'line',
+                chartData: {
+                    labels: ['開案', '第一個月', '第二個月', '第三個月', '第四個月'],
+                    datasets: [{
+                        label: '累計服務成本',
+                        data: [5000, 7000, 8500, 11000, 12000],
+                        fill: false,
+                        borderColor: '#14B8A6',
+                        tension: 0.1
+                    }]
+                },
+                chartOptions: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { callback: value => '$' + value } } },
+                    plugins: { legend: { display: false }, title: { display: true, text: '專案累計服務成本' } }
+                },
+                interactive: `
+                    <div class="text-center mt-4">
+                        <button onclick="addServiceCost(2500, '第五個月')" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">模擬：工地勘查成本</button>
+                    </div>
+                `
+            },
+             '4': {
+                title: '階段四：結案與內容轉化',
+                subtitle: '讓每個成功案例，創造新的商業價值',
+                painPoint: '專案結束後，除了收款，其餘的寶貴經驗和成果往往沒有被系統性地再利用。無法精準計算 ROI，也錯失了將成功案例轉化為行銷內容的機會。',
+                solution: '分析整個媒合專案的總投入和總收入(可能是來自設計師的廣告費或分潤)，計算ROI。最妙的是，這個專案的成功產出——「完工案例」，可以直接變成下一個「整合行銷影音專案」的案源，形成一個完美的業務閉環。',
+                demoPoint: '「專案圓滿結束，現在是收穫的時刻。我們來看看系統如何自動幫我們算出這個案子的投報率，更關鍵的是，如何一鍵啟動下一個流程：將這個成功案例變成我們媒體平台上的精彩內容。」',
+                activities: ['完工驗收', '滿意度調查', '案例分享', '內容轉化'],
+                 customHTML: `
+                    <div class="w-full max-w-3xl mx-auto text-center">
+                         <h4 class="font-bold text-center mb-4">專案投資報酬率 (ROI) 分析</h4>
+                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                             <div class="bg-green-50 p-4 rounded-lg">
+                                 <p class="text-sm text-green-800 font-semibold">總收入 (分潤/服務費)</p>
+                                 <p class="text-3xl font-bold text-green-900">$50,000</p>
+                             </div>
+                             <div class="bg-red-50 p-4 rounded-lg">
+                                 <p class="text-sm text-red-800 font-semibold">總服務成本</p>
+                                 <p class="text-3xl font-bold text-red-900">$14,500</p>
+                             </div>
+                             <div class="bg-teal-50 p-4 rounded-lg">
+                                 <p class="text-sm text-teal-800 font-semibold">投資報酬率 (ROI)</p>
+                                 <p class="text-3xl font-bold text-teal-900">244.8%</p>
+                             </div>
+                         </div>
+                         <div class="mt-8 p-4 bg-gray-100 rounded-lg">
+                             <p class="mb-4 text-lg font-medium">業務閉環：這個成功案例是絕佳的行銷素材！</p>
+                             <button onclick="alert('已建立新的【整合行銷影音專案】草稿，並連結至此案例！')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">轉化為「媒體製作」專案</button>
+                         </div>
+                    </div>
+                `
+            }
+        };
+
+        const stageContentEl = document.getElementById('stage-content');
+        const stepperButtons = document.querySelectorAll('.step');
+        let currentChart = null;
+
+        function renderStage(stageId) {
+            const data = stageData[stageId];
+            if (!data) return;
+
+            let activitiesHTML = data.activities.map(act => `<span class="bg-gray-200 text-gray-700 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded-full">${act}</span>`).join('');
+
+            let contentHTML = `
+                <div class="fade-in">
+                    <h3 class="text-xl font-bold text-center text-teal-600 mb-1">${data.title}</h3>
+                    <p class="text-center text-gray-500 mb-6 italic">"${data.subtitle}"</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="prose max-w-none">
+                            <div class="flex flex-wrap mb-4">${activitiesHTML}</div>
+                            <h4 class="font-bold text-red-600">痛點：</h4>
+                            <p>${data.painPoint}</p>
+                            <h4 class="font-bold text-green-600">NetSuite SRP 解決方案：</h4>
+                            <p>${data.solution}</p>
+                        </div>
+                        <div id="visualization" class="min-h-[300px] flex items-center justify-center">
+                             ${data.customHTML ? data.customHTML : '<div class="chart-container"><canvas id="myChart"></canvas></div>'}
+                             ${data.interactive ? data.interactive : ''}
+                        </div>
+                    </div>
+                    <div class="mt-8 p-4 bg-teal-50 border-l-4 border-teal-500 rounded-r-lg">
+                        <p class="font-semibold text-teal-800">【Demo 切換點】</p>
+                        <p class="text-teal-700">${data.demoPoint}</p>
+                    </div>
+                </div>
+            `;
+            stageContentEl.innerHTML = contentHTML;
+            
+            if (currentChart) {
+                currentChart.destroy();
+                currentChart = null;
+            }
+
+            if (data.chartType) {
+                const ctx = document.getElementById('myChart')?.getContext('2d');
+                if (ctx) {
+                    currentChart = new Chart(ctx, {
+                        type: data.chartType,
+                        data: JSON.parse(JSON.stringify(data.chartData)),
+                        options: data.chartOptions
+                    });
+                }
+            }
+        }
+
+        function convertToProject() {
+            const card = document.getElementById('lead-card');
+            const col2 = document.getElementById('col-2');
+            const col3 = document.getElementById('col-3');
+            const btn = document.getElementById('convert-btn');
+            
+            btn.disabled = true;
+            btn.textContent = '轉換中...';
+            
+            card.style.transform = 'translateX(105%) scale(0.9)';
+            
+            setTimeout(() => {
+                col2.appendChild(card);
+                card.style.transform = 'translateX(0) scale(1)';
+                card.classList.add('bg-yellow-100');
+            }, 500);
+            
+            setTimeout(() => {
+                card.style.transform = 'translateX(105%) scale(0.9)';
+            }, 1500);
+
+            setTimeout(() => {
+                col3.appendChild(card);
+                card.style.transform = 'translateX(0) scale(1)';
+                card.classList.remove('bg-yellow-100');
+                card.classList.add('bg-green-100');
+                btn.textContent = '轉換成功！';
+                btn.classList.remove('bg-teal-500');
+                btn.classList.add('bg-green-600');
+            }, 2000);
+        }
+
+        function logHours(hours, taskName) {
+            const totalHoursEl = document.getElementById('total-hours');
+            const taskListEl = document.getElementById('task-list');
+            let currentHours = parseInt(totalHoursEl.textContent);
+            currentHours += hours;
+            totalHoursEl.textContent = currentHours;
+
+            const newTaskEl = document.createElement('div');
+            newTaskEl.className = 'flex justify-between items-center py-2 border-b';
+            newTaskEl.innerHTML = `<span>${taskName} (${hours} 小時)</span><span class="text-gray-500">已記錄</span>`;
+            taskListEl.appendChild(newTaskEl);
+        }
+
+        function addServiceCost(cost, label) {
+            if (currentChart && currentChart.config.type === 'line') {
+                const lastCost = currentChart.data.datasets[0].data.slice(-1)[0];
+                currentChart.data.labels.push(label);
+                currentChart.data.datasets[0].data.push(lastCost + cost);
+                currentChart.update();
+            }
+        }
+
+        stepperButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const stageId = button.dataset.stage;
+                stepperButtons.forEach(btn => btn.classList.remove('step-active'));
+                button.classList.add('step-active');
+                renderStage(stageId);
+            });
+        });
+
+        renderStage('1');
+    </script>
+</body>
+</html>

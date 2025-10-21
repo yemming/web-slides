@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite AI 助手 - 中階應用場景</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #ffffff; /* 純白背景 */
+            color: #212529;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: #343a40; 
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #6c757d; 
+        }
+
+        .cards-grid {
+            display: grid;
+            /* 調整欄位最小寬度以適應較長的文字內容 */
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: #f8f9fa; /* 淡灰色卡片背景 */
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column; /* 讓內容垂直排列 */
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #667eea;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+            color: #667eea;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .card-description {
+            color: #495057;
+            line-height: 1.8; /* 增加行高讓長文易讀 */
+            font-size: 1.05em;
+        }
+        
+        /* 強調文字樣式 */
+        .card-description strong {
+            color: #0056b3;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 NetSuite AI 智能助手</h1>
+            <p>中階應用場景展示 (Contextualized Scenarios)</p>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">1️⃣</div>
+                    <h3 class="card-title">新產品上市模擬</h3>
+                </div>
+                <p class="card-description">
+                    「我們準備推出新一代<strong>『智能辦公桌 Pro』</strong>，請基於 NetSuite 中過去所有<strong>家具類</strong>似產品 (例如<strong>經典款主管椅</strong>、<strong>模組化會議桌</strong>系列) 的銷售數據、客戶輪廓和生命週期，預測<strong>『智能辦公桌 Pro』</strong>上市後前六個月的銷售曲線。並根據這個預測，給出建議的初期備貨量、安全庫存水位和再訂購點。」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">2️⃣</div>
+                    <h3 class="card-title">現金流預測</h3>
+                </div>
+                <p class="card-description">
+                    「預測公司未來 60 天的現金流，並把所有已確認的應收和應付帳款都算進去。並根據客戶付款歷史，對應收帳款做一個風險加權。如果我們現在決定提前支付給供應商<strong>『Koyoto Enterprise』</strong>的貨款，現金流會出現缺口嗎？」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">3️⃣</div>
+                    <h3 class="card-title">會前簡報準備</h3>
+                </div>
+                <p class="card-description">
+                    「幫我準備一下明天跟<strong>『Gentry Inc.』</strong>的會前簡報。給我他們過去一年的採購趨勢分析、目前所有未結案的訂單列表、應收帳款狀況，並根據他們的採購品項，從我們的<strong>服務與家具產品線</strong>中，推薦三種最有潛力的追加銷售 (Upsell) 機會，並說明推薦理由。」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">4️⃣</div>
+                    <h3 class="card-title">光速報價</h3>
+                </div>
+                <p class="card-description">
+                    「產生一份給<strong>『Gentry Inc.』</strong>的新報價單，品項為<strong>『高階主管椅』10 件</strong>、<strong>『配套文件櫃』5 個</strong>，套用他們的客戶級別折扣，並標明目前庫存是否能在三天內出貨。如果庫存不足，立刻告訴我預計的交期。」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">5️⃣</div>
+                    <h3 class="card-title">供應鏈預警</h3>
+                </div>
+                <p class="card-description">
+                    「啟動供應鏈風險預警：根據我們未來 90 天內的所有採購訂單和在途貨運，對比生產排程，有沒有任何潛在的斷鏈風險？特別標示出那些來自<strong>『Koyoto Enterprise』</strong>等單一供應商的關鍵物料。」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">6️⃣</div>
+                    <h3 class="card-title">異常偵測</h3>
+                </div>
+                <p class="card-description">
+                    「幫我檢視上個季度所有費用報銷單和向<strong>『Mind the Gap』集團</strong>的採購訂單，找出所有金額超過 $100,000，且供應商不在我們核准列表中的交易。並檢查是否有同一員工在 24 小時內提交多筆性質相似的費用。」
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

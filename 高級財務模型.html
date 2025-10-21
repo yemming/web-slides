@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 整合商業分析框架</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #ffffff; /* 純白背景 */
+            color: #212529;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: #343a40; 
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #6c757d; 
+        }
+
+        .cards-grid {
+            display: grid;
+            /* 調整為四欄式佈局 */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: #f8f9fa; /* 淡灰色卡片背景 */
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 讓內容垂直置中 */
+            text-align: center; /* 文字置中 */
+            min-height: 220px; /* 設定最小高度讓卡片等高 */
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #667eea;
+        }
+        
+        .card-title {
+            font-size: 1.6em;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            color: #6c757d;
+            line-height: 1.6; 
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+            .card {
+                min-height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 AI 整合商業分析框架</h1>
+            <p>將經典管理模型轉化為可執行的 AI 查詢指令</p>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <h3 class="card-title">阿特曼 Z-Score 模型</h3>
+                <p class="card-description">(Altman Z-Score)</p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">金字塔分析</h3>
+                <p class="card-description">(Pyramid of Ratios)</p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">平衡計分卡</h3>
+                <p class="card-description">(Balanced Scorecard, BSC)</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">波特五力分析</h3>
+                <p class="card-description">(Porter's Five Forces)</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">BCG 矩陣</h3>
+                <p class="card-description">檢視產品組合的「X光片」<br>(BCG Matrix)</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">安索夫矩陣</h3>
+                <p class="card-description">指引未來成長的「藏寶圖」<br>(Ansoff Matrix)</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">價值鏈分析</h3>
+                <p class="card-description">企業運作的「流程解剖圖」<br>(Value Chain Analysis)</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">MECE 原則</h3>
+                <p class="card-description">顧問的「思維心法」<br>(Mutually Exclusive, Collectively Exhaustive)</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

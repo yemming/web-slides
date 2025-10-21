@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite SRP 服務項目核心價值</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .presentation-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            font-size: 1.3em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            list-style-type: none;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .highlight {
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 1.6em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-box {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .flow-arrow {
+            font-size: 1.5em;
+            color: #667eea;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+            border-left: 5px solid #764ba2;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.5s ease;
+            z-index: 1000;
+        }
+
+        .hint {
+            font-style: italic;
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="presentation-container">
+        <!-- Slide 1: 封面 -->
+        <div class="slide active center">
+            <div>
+                <h1>NetSuite SRP 的靈魂</h1>
+                <p class="subtitle">解鎖「服務項目 (Service Item)」整合專案、財務與資源的真正力量</p>
+                <p class="hint">按 → 鍵或點擊下方按鈕開始</p>
+            </div>
+            <span class="slide-number">1 / 9</span>
+        </div>
+
+        <!-- Slide 2: 議程與痛點 -->
+        <div class="slide">
+            <h2>為何我們的系統總是對不攏？</h2>
+            <ul>
+                <li><span class="highlight">專案管理的痛點：</span> 專案預算超支，但沒人知道錢花在哪？</li>
+                <li><span class="highlight">財務部門的痛點：</span> 每月結算像打仗，工時和帳單永遠對不起來？</li>
+                <li><span class="highlight">資源規劃的痛點：</span> 人力分配憑感覺，團隊忙得要死，公司卻不賺錢？</li>
+            </ul>
+            <div class="key-point">
+                <strong>今日議程：</strong> 我們將探討這一切問題的解答 — <span class="highlight">服務項目 (Service Item)</span>
+            </div>
+            <span class="slide-number">2 / 9</span>
+        </div>
+
+        <!-- Slide 3: 核心概念 -->
+        <div class="slide">
+            <h2>萬物之源：服務項目是整套系統的「原子」</h2>
+            <ul>
+                <li>它不是一個產品，而是<span class="highlight">一個標準化的「工作單位」(Unit of Work)</span></li>
+                <li>它是專案、財務、人資部門之間溝通的<span class="highlight">「共同語言」(Common Language)</span></li>
+            </ul>
+            
+            <div class="key-point">
+                <h3>🍽️ 核心比喻：餐廳的「菜單」</h3>
+                <p>把它想像成一家餐廳的<strong>「菜單」</strong>。沒有菜單...</p>
+                <ul>
+                    <li><strong>廚師 (員工)</strong> 不知道要做什麼菜</li>
+                    <li><strong>帳房 (財務)</strong> 不知道該收多少錢</li>
+                    <li><strong>經理 (主管)</strong> 不知道哪個菜最受歡迎、最賺錢</li>
+                </ul>
+            </div>
+            <span class="slide-number">3 / 9</span>
+        </div>
+
+        <!-- Slide 4: 專案管理 -->
+        <div class="slide">
+            <h2>🏗️ The Cornerstone: 專案管理的基石</h2>
+            <h3>服務項目如何支撐專案管理？</h3>
+            <ul>
+                <li><span class="highlight">定義工作分解 (WBS)：</span><br>
+                    將模糊的專案，拆解成一個個清晰的、可執行的任務<br>
+                    例如：「需求訪談」、「系統開發」、「使用者測試」</li>
+                <li><span class="highlight">精準追蹤成本：</span><br>
+                    員工回報的每一筆工時，都直接對應到一個服務項目<br>
+                    讓每一分錢的人工成本都有跡可循</li>
+                <li><span class="highlight">實現進度可視化：</span><br>
+                    透過服務項目的完成度，驅動燃盡圖 (Burndown Chart)<br>
+                    讓專案進度不再是玄學</li>
+            </ul>
+            <p class="hint">💡 記住：沒有服務項目，你的專案經理就跟瞎子摸象沒兩樣</p>
+            <span class="slide-number">4 / 9</span>
+        </div>
+
+        <!-- Slide 5: 財務結算 -->
+        <div class="slide">
+            <h2>⚙️ The Engine: 財務結算的引擎</h2>
+            <h3>服務項目如何驅動財務流程？</h3>
+            <ul>
+                <li><span class="highlight">設定計費規則：</span><br>
+                    每個服務都能有獨立的定價<br>
+                    按時計費 (T&M)、固定費用 (Fixed Price)、內部成本 (Non-Billable)？<br>
+                    規則清清楚楚</li>
+                <li><span class="highlight">實現開票自動化：</span><br>
+                    從員工的工時紀錄，到產生給客戶的發票明細<br>
+                    系統可以一氣呵成，大幅減少人工錯誤</li>
+                <li><span class="highlight">驅動收入認列：</span><br>
+                    這是專業級玩法！系統能根據服務的完成進度<br>
+                    自動、合規地認列公司收入，讓財報更即時、更準確</li>
+            </ul>
+            <p class="hint">💡 關鍵字：「自動化」與「合規」—— 把財務人員從對帳地獄中解放出來</p>
+            <span class="slide-number">5 / 9</span>
+        </div>
+
+        <!-- Slide 6: 資源規劃 -->
+        <div class="slide">
+            <h2>🧭 The Compass: 資源規劃的羅盤</h2>
+            <h3>服務項目如何指引資源分配？</h3>
+            <ul>
+                <li><span class="highlight">對應員工技能：</span><br>
+                    將「對的人」放在「對的任務」上<br>
+                    例如：只有 DBA 技能的員工，才能被指派去做「資料庫優化」的服務</li>
+                <li><span class="highlight">分析團隊產能 (Utilization)：</span><br>
+                    數據會說話！團隊的時間是花在能收錢的客戶專案上<br>
+                    還是無法收錢的內部雜務上？一目了然</li>
+                <li><span class="highlight">預測未來需求：</span><br>
+                    根據銷售合約中的服務項目<br>
+                    管理層能預測未來需要哪種技能的人才<br>
+                    讓招聘和資源調度不再是猜謎遊戲</li>
+            </ul>
+            <p class="hint">💡 這是給老闆看的：知道錢花得值不值，團隊是資產還是負債</p>
+            <span class="slide-number">6 / 9</span>
+        </div>
+
+        <!-- Slide 7: 整合的力量 -->
+        <div class="slide">
+            <h2>🔄 Bid-to-Bill: 從競標到收款的完美閉環</h2>
+            <h3>服務項目是串起這一切的「紅線」</h3>
+            
+            <div class="flow-diagram">
+                <div class="flow-box">專案估價</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box">專案執行</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box">工時記錄</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box">帳務開票</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box">收入認列</div>
+            </div>
+            
+            <div class="key-point" style="text-align: center;">
+                <p><strong>貫穿全程的核心：</strong></p>
+                <h3 style="margin-top: 10px;">服務項目 (Service Item)</h3>
+            </div>
+            <span class="slide-number">7 / 9</span>
+        </div>
+
+        <!-- Slide 8: 結論 -->
+        <div class="slide">
+            <h2>🎯 Key Takeaways</h2>
+            
+            <div class="key-point">
+                <h3>1. 單一事實來源 (Single Source of Truth)</h3>
+                <p>服務項目是跨部門溝通的唯一標準，消除模糊地帶</p>
+            </div>
+            
+            <div class="key-point">
+                <h3>2. 自動化與準確性 (Automation & Accuracy)</h3>
+                <p>大幅提升從專案到財務流程的效率與正確性</p>
+            </div>
+            
+            <div class="key-point">
+                <h3>3. 商業洞察力 (Business Insight)</h3>
+                <p>提供數據驅動的決策依據，優化獲利能力與資源配置</p>
+            </div>
+            
+            <p style="text-align: center; font-size: 1.4em; margin-top: 30px;">
+                <strong>結論：搞懂並善用「服務項目」，<br>你的 NetSuite SRP 才算真正活了過來！</strong>
+            </p>
+            <span class="slide-number">8 / 9</span>
+        </div>
+
+        <!-- Slide 9: Q&A -->
+        <div class="slide center">
+            <div>
+                <h1>Q&A</h1>
+                <p class="subtitle">感謝聆聽</p>
+                <p style="margin-top: 50px; font-size: 1.1em;">歡迎提問與討論</p>
+            </div>
+            <span class="slide-number">9 / 9</span>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← 上一頁</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">下一頁 →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+            updateSlide();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                updateSlide();
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                updateSlide();
+            }
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) changeSlide(1); // Swipe left
+            if (touchEndX > touchStartX + 50) changeSlide(-1); // Swipe right
+        }
+
+        // Initialize
+        updateSlide();
+    </script>
+</body>
+</html>

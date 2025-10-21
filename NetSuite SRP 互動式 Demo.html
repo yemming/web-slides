@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite SRP 互動式 Demo | 媒體製作篇</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Slate Blue accent -->
+    <!-- Application Structure Plan: The application is designed as an interactive project lifecycle dashboard. It transforms the linear presentation into an exploratory experience. A top-level stepper navigates through four key project stages (Planning, Production, Delivery, Analysis). This non-linear structure allows users to explore stages based on interest. Each stage features interactive visualizations (charts, timelines) that make abstract concepts like real-time cost tracking and milestone billing tangible, providing a more engaging and memorable demonstration of NetSuite SRP's value than a static slideshow. -->
+    <!-- Visualization & Content Choices: 
+        - Pain Points: Used interactive cards with hover effects to quickly establish empathy and relevance.
+        - Stage 1 (Planning): Report Info: Budgeting -> Goal: Visualize financial planning -> Viz: Donut Chart (Chart.js) -> Interaction: Hover for details & a new Gemini API call to generate a task list based on the budget. -> Justification: Clearly represents budget allocation and adds AI-powered project kickoff assistance.
+        - Stage 2 (Production): Report Info: Cost Tracking -> Goal: Demonstrate real-time control -> Viz: Bar Chart (Chart.js) -> Interaction: Buttons simulate data entry to update the chart live -> Justification: Makes the "live tracking" concept tangible and proves real-time visibility.
+        - Stage 3 (Delivery): Report Info: Milestone Billing -> Goal: Link progress to cash flow -> Viz: HTML/CSS Timeline -> Interaction: Clicking milestones updates a visual cash flow indicator -> Justification: Shows the direct financial impact of completing project stages.
+        - Stage 4 (Analysis): Report Info: Profitability Reporting -> Goal: Showcase business outcomes -> Viz: Key Metric Cards (HTML/CSS) -> Interaction: Button click confirmation & a new Gemini API call for post-mortem analysis. -> Justification: Focuses on the end value of data-driven insights and adds AI to transform raw data into strategic knowledge.
+        - Core Values: Used a clean grid with icons for a strong, memorable summary of benefits. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .step {
+            transition: all 0.3s ease;
+        }
+        .step-active {
+            background-color: #3B82F6 !important;
+            color: white !important;
+            border-color: #3B82F6 !important;
+        }
+        .milestone {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .milestone-complete {
+            background-color: #10B981;
+            color: white;
+            border-left-color: #059669;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3B82F6;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">NetSuite SRP 如何助攻「幸福空間」影音專案</h1>
+            <p class="mt-2 text-lg md:text-xl text-blue-600 font-medium">✨ 整合 Gemini AI，實現智慧化專案管理</p>
+        </header>
+
+        <section id="pain-points" class="mb-16">
+            <h2 class="text-2xl font-bold text-center mb-8 text-gray-700">媒體製作的「甜蜜煩惱」</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+                    <h3 class="font-bold text-lg text-red-600 mb-2">創意無限，但成本失控？</h3>
+                    <p class="text-gray-600">一個好的 Idea 價值連城，但執行它的成本卻常常變成一筆糊塗帳。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+                    <h3 class="font-bold text-lg text-yellow-600 mb-2">PM 像八爪章魚，一手抓進度？</h3>
+                    <p class="text-gray-600">專案資訊散落在各處，團隊溝通成本極高，進度難以追蹤。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+                    <h3 class="font-bold text-lg text-purple-600 mb-2">專案到底賺不賺錢，全憑「感覺」？</h3>
+                    <p class="text-gray-600">結案後，對於實際利潤、人力成本佔比，缺乏精準的數據洞察。</p>
+                </div>
+            </div>
+             <p class="text-center mt-8 text-lg text-gray-700 font-medium">我們今天要聊的，就是如何用一個平台，把「感覺」變成精準的「數據」。</p>
+        </section>
+
+        <main id="interactive-dashboard" class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
+            <h2 class="text-2xl font-bold text-center mb-2 text-gray-800">整合行銷影音專案：端到端全流程儀表板</h2>
+            <p class="text-center text-gray-500 mb-8">點擊下方階段，體驗專案從混亂到清晰的過程。</p>
+            
+            <nav id="stepper" class="flex items-center justify-center space-x-2 md:space-x-4 mb-8">
+                <button data-stage="1" class="step step-active flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">1. 規劃與合約</button>
+                <div class="flex-1 h-px bg-gray-300 hidden md:block"></div>
+                <button data-stage="2" class="step flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">2. 製作執行</button>
+                 <div class="flex-1 h-px bg-gray-300 hidden md:block"></div>
+                <button data-stage="3" class="step flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">3. 交付與收款</button>
+                 <div class="flex-1 h-px bg-gray-300 hidden md:block"></div>
+                <button data-stage="4" class="step flex-1 md:flex-initial text-center px-4 py-2 rounded-full border-2 border-gray-300 bg-gray-100 text-gray-600 font-semibold">4. 結案與分析</button>
+            </nav>
+
+            <div id="stage-content">
+            </div>
+        </main>
+        
+        <section id="core-values" class="mt-16">
+            <h2 class="text-2xl font-bold text-center mb-8 text-gray-700">NetSuite SRP 帶來的核心價值</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+                    <h3 class="font-bold text-lg text-blue-600 mb-2">財務可視化</h3>
+                    <p class="text-gray-600">從各自為政到全局掌控，即時洞察每個專案的健康狀況。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+                    <h3 class="font-bold text-lg text-green-600 mb-2">流程標準化</h3>
+                    <p class="text-gray-600">從隨機應變到 SOP 化管理，提升效率，降低風險。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+                    <h3 class="font-bold text-lg text-indigo-600 mb-2">決策數據化</h3>
+                    <p class="text-gray-600">從經驗導向到數據驅動，讓每個決策都有理有據。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+                    <h3 class="font-bold text-lg text-amber-600 mb-2">知識資產化</h3>
+                    <p class="text-gray-600">從個人經驗到組織資產，打造可持續成長的管理能力。</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const stageData = {
+            '1': {
+                title: '階段一：前期規劃與合約',
+                subtitle: '好的開始是成功...和利潤的一半',
+                painPoint: '報價靠經驗，預算靠感覺，專案還沒開始，利潤已經是個謎。',
+                solution: '在 NetSuite 中，我們可以從源頭建立專案預算，將估價單中的人力、外包、器材費用，直接轉為專案的預算基準線(Baseline)。確保專案從一開始就在盈利的軌道上。',
+                demoPoint: '「現在，我們就來看看在 NetSuite 裡，如何從一張客戶報價單，無縫生成一個帶有完整 WBS (工作分解結構) 與預算的專案，贏在起跑線。」',
+                activities: ['需求訪談', '創意發想', '腳本撰寫', '報價與合約簽訂'],
+                chartType: 'doughnut',
+                chartData: {
+                    labels: ['預估人力成本', '預估外包費用', '預估器材費用', '管理與雜支'],
+                    datasets: [{
+                        label: '專案預算結構',
+                        data: [45, 30, 15, 10],
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#6366F1'],
+                        hoverOffset: 4
+                    }]
+                },
+                chartOptions: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: '專案預算結構' }
+                    }
+                },
+                geminiFeature: `
+                    <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+                         <h4 class="font-bold text-lg text-gray-700 mb-3">✨ Gemini AI 智慧助理</h4>
+                         <p class="mb-4 text-gray-600">讓 AI 根據預算結構，為您生成一份詳細的建議任務清單，快速啟動專案。</p>
+                         <button onclick="generateTasks()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-lg transition-colors">✨ 產生建議任務清單</button>
+                         <div id="gemini-output-1" class="mt-4 text-left bg-gray-50 p-4 rounded-lg min-h-[100px] prose max-w-none hidden"></div>
+                    </div>
+                `
+            },
+            '2': {
+                title: '階段二：製作執行',
+                subtitle: '錢與汗水，每一滴都要算清楚',
+                painPoint: '導演喝了幾瓶水？攝影師加班了幾小時？這些瑣碎但致命的成本，往往是專案利潤的隱形殺手。內部人員的工時更是個黑洞。',
+                solution: '透過工時單(Timesheet) 與費用報告(Expense Report)，團隊成員可以隨時隨地回報工時與開銷。所有成本即時、自動歸集到專案中，讓 PM 對預算消耗一目了然。',
+                demoPoint: '「想像一下這個情境：讓我們來模擬一位攝影師，如何用手機回報他今天的工時和交通費，以及專案經理(PM)如何在儀表板上，看到專案成本的即時變化...」',
+                activities: ['團隊組建', '場地勘景', '設備租賃', '拍攝執行'],
+                chartType: 'bar',
+                chartData: {
+                    labels: ['人力', '外包', '器材'],
+                    datasets: [
+                        { label: '預算', data: [100000, 80000, 30000], backgroundColor: '#A5B4FC' },
+                        { label: '實際花費', data: [20000, 15000, 10000], backgroundColor: '#4F46E5' }
+                    ]
+                },
+                chartOptions: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: '預算 vs 實際成本 (即時更新)' }
+                    }
+                },
+                interactive: `
+                    <div class="text-center mt-4">
+                        <p class="font-medium mb-2">模擬即時成本登錄：</p>
+                        <button onclick="updateCost(0, 10000)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">登錄人力工時</button>
+                        <button onclick="updateCost(2, 5000)" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm ml-2">登錄器材費用</button>
+                    </div>
+                `
+            },
+            '3': {
+                title: '階段三：後期製作與交付',
+                subtitle: '拒絕「改到飽」，實現「里程碑式收款」',
+                painPoint: '客戶一個「小修改」，團隊可能要加班到天明。帳款總是拖到專案結束才收，公司現金流壓力山大。',
+                solution: '每次修改皆可記錄工時，成本完全透明化。更重要的是，可以設定「里程碑式」計費規則(Billing Rule)，例如「腳本確認」、「粗剪版提供」，每完成一個里程碑，系統就自動觸發帳單，讓專案進度與公司現金流同步前進。',
+                demoPoint: '「我們來看看，當我們在系統中將『粗剪版提供』這個里程碑標示為『完成』時，系統如何自動為財務部門產生一張應收帳款單...」',
+                activities: ['影片剪輯', '特效製作', '客戶審核', '最終版本交付'],
+                customHTML: `
+                    <div class="w-full max-w-2xl mx-auto">
+                        <div class="flex flex-col md:flex-row justify-between items-center">
+                            <div class="w-full md:w-2/3">
+                                <h4 class="font-bold text-center mb-4">專案里程碑與收款進度</h4>
+                                <div class="space-y-3">
+                                    <div id="milestone-1" onclick="completeMilestone(1, 20)" class="milestone p-3 border-l-4 border-gray-300 bg-gray-50 rounded-r-lg">
+                                        <p class="font-semibold">腳本確認 (收到訂金)</p>
+                                    </div>
+                                    <div id="milestone-2" onclick="completeMilestone(2, 40)" class="milestone p-3 border-l-4 border-gray-300 bg-gray-50 rounded-r-lg">
+                                        <p class="font-semibold">粗剪版提供 (收到中期款)</p>
+                                    </div>
+                                    <div id="milestone-3" onclick="completeMilestone(3, 40)" class="milestone p-3 border-l-4 border-gray-300 bg-gray-50 rounded-r-lg">
+                                        <p class="font-semibold">最終版交付 (收到尾款)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 mt-6 md:mt-0 md:pl-8 text-center">
+                                 <h4 class="font-bold mb-2">現金流進度</h4>
+                                 <div id="cashflow-indicator" class="text-5xl font-bold text-gray-400">0%</div>
+                                 <p class="text-sm text-gray-500 mt-1">模擬收款進度</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+             '4': {
+                title: '階段四：結案與分析',
+                subtitle: '把「經驗」變成可複製的「知識」',
+                painPoint: '專案結束就忘了。賺錢還是虧錢，細節全在 PM 的腦子裡。下次接到類似的案子，報價還是只能拍腦袋。',
+                solution: 'NetSuite SRP 提供一鍵生成專案損益分析報告。實際成本 vs. 預算，一清二楚。更棒的是，可以將成功的專案轉為範本，知識得以傳承，讓未來的報價更精準、更具競爭力。',
+                demoPoint: '「最後，也是最關鍵的一步。讓我們來看這個專案的最終儀表板，看看我們的利潤率是多少，以及如何只點擊一下，就把這個成功模式存成未來的專案範本...」',
+                activities: ['專案成本結算', '利潤分析', '專案複盤'],
+                customHTML: `
+                    <div class="w-full max-w-3xl mx-auto text-center">
+                         <h4 class="font-bold text-center mb-4">專案損益分析</h4>
+                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                             <div class="bg-blue-50 p-4 rounded-lg">
+                                 <p class="text-sm text-blue-800 font-semibold">總收入</p>
+                                 <p class="text-3xl font-bold text-blue-900">$250,000</p>
+                             </div>
+                             <div class="bg-red-50 p-4 rounded-lg">
+                                 <p class="text-sm text-red-800 font-semibold">總成本</p>
+                                 <p class="text-3xl font-bold text-red-900">$195,000</p>
+                             </div>
+                             <div class="bg-green-50 p-4 rounded-lg">
+                                 <p class="text-sm text-green-800 font-semibold">毛利率</p>
+                                 <p class="text-3xl font-bold text-green-900">22.0%</p>
+                             </div>
+                         </div>
+                         <div class="mt-8">
+                             <p class="mb-4">這個成功的專案模式，可以一鍵儲存，供未來使用。</p>
+                             <button onclick="alert('專案範本已成功儲存！')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">將此專案儲存為範本</button>
+                         </div>
+                    </div>
+                `,
+                geminiFeature: `
+                    <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+                         <h4 class="font-bold text-lg text-gray-700 mb-3">✨ Gemini AI 智慧助理</h4>
+                         <p class="mb-4 text-gray-600">讓 AI 將冰冷的財務數據，轉化為有溫度的策略洞察，為下一次成功奠定基礎。</p>
+                         <button onclick="generateInsights()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-lg transition-colors">✨ 產生專案複盤洞察</button>
+                         <div id="gemini-output-4" class="mt-4 text-left bg-gray-50 p-4 rounded-lg min-h-[100px] prose max-w-none hidden"></div>
+                    </div>
+                `
+            }
+        };
+
+        const stageContentEl = document.getElementById('stage-content');
+        const stepperButtons = document.querySelectorAll('.step');
+        let currentChart = null;
+        let cashflow = 0;
+
+        async function callGeminiAPI(prompt, outputElement) {
+            outputElement.innerHTML = '<div class="flex justify-center items-center"><div class="spinner"></div></div>';
+            outputElement.classList.remove('hidden');
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+            };
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 請求失敗，狀態碼：${response.status}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (text) {
+                    outputElement.innerHTML = text.replace(/\n/g, '<br>').replace(/\*/g, '• ');
+                } else {
+                    outputElement.innerHTML = '<p class="text-red-500">抱歉，無法獲取 AI 回應。請稍後再試。</p>';
+                }
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                outputElement.innerHTML = `<p class="text-red-500">發生錯誤：${error.message}</p>`;
+            }
+        }
+
+        function generateTasks() {
+            const outputElement = document.getElementById('gemini-output-1');
+            const prompt = "你是一位資深的媒體製作公司專案經理。根據一個『整合行銷影音專案』的初步預算結構（人力成本 45%, 外包費用 30%, 器材費用 15%, 管理雜支 10%），請為前期規劃與製作執行階段，生成一份條列式的詳細關鍵任務清單，以利團隊展開工作。";
+            callGeminiAPI(prompt, outputElement);
+        }
+
+        function generateInsights() {
+            const outputElement = document.getElementById('gemini-output-4');
+            const prompt = "你是一位專注於媒體產業的財務分析師。一個影音專案剛剛結案，其財務數據如下：總收入 $250,000，總成本 $195,000，毛利率 22.0%。請根據這些數據，提供三點核心洞察與具體建議，以幫助公司在未來的類似專案中提升盈利能力。請用條列式回答。";
+            callGeminiAPI(prompt, outputElement);
+        }
+
+        function renderStage(stageId) {
+            const data = stageData[stageId];
+            if (!data) return;
+
+            let activitiesHTML = data.activities.map(act => `<span class="bg-gray-200 text-gray-700 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded-full">${act}</span>`).join('');
+
+            let contentHTML = `
+                <div class="fade-in">
+                    <h3 class="text-xl font-bold text-center text-blue-600 mb-1">${data.title}</h3>
+                    <p class="text-center text-gray-500 mb-6 italic">"${data.subtitle}"</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="prose max-w-none">
+                            <div class="flex flex-wrap mb-4">${activitiesHTML}</div>
+                            <h4 class="font-bold text-red-600">痛點：</h4>
+                            <p>${data.painPoint}</p>
+                            <h4 class="font-bold text-green-600">NetSuite SRP 解決方案：</h4>
+                            <p>${data.solution}</p>
+                        </div>
+                        <div id="visualization" class="min-h-[300px] flex items-center justify-center">
+                            ${data.customHTML ? data.customHTML : '<div class="chart-container"><canvas id="myChart"></canvas></div>'}
+                            ${data.interactive ? data.interactive : ''}
+                        </div>
+                    </div>
+                    ${data.geminiFeature ? data.geminiFeature : ''}
+                    <div class="mt-8 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                        <p class="font-semibold text-blue-800">【Demo 切換點】</p>
+                        <p class="text-blue-700">${data.demoPoint}</p>
+                    </div>
+                </div>
+            `;
+            stageContentEl.innerHTML = contentHTML;
+
+            if (currentChart) {
+                currentChart.destroy();
+                currentChart = null;
+            }
+
+            if (data.chartType) {
+                const ctx = document.getElementById('myChart')?.getContext('2d');
+                if (ctx) {
+                    currentChart = new Chart(ctx, {
+                        type: data.chartType,
+                        data: JSON.parse(JSON.stringify(data.chartData)),
+                        options: data.chartOptions
+                    });
+                }
+            }
+            
+            if(stageId === '3') {
+                cashflow = 0;
+                document.getElementById('cashflow-indicator').textContent = '0%';
+            }
+        }
+        
+        function updateCost(index, amount) {
+            if (currentChart && currentChart.config.type === 'bar') {
+                currentChart.data.datasets[1].data[index] += amount;
+                currentChart.update();
+            }
+        }
+        
+        function completeMilestone(milestoneId, percentage) {
+            const el = document.getElementById(`milestone-${milestoneId}`);
+            if (el && !el.classList.contains('milestone-complete')) {
+                el.classList.add('milestone-complete');
+                cashflow += percentage;
+                document.getElementById('cashflow-indicator').textContent = `${Math.min(100, cashflow)}%`;
+            }
+        }
+
+        stepperButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const stageId = button.dataset.stage;
+                stepperButtons.forEach(btn => btn.classList.remove('step-active'));
+                button.classList.add('step-active');
+                renderStage(stageId);
+            });
+        });
+
+        renderStage('1');
+    </script>
+</body>
+</html>
+

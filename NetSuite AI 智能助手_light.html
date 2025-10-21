@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite AI 智能助手 (白底灰卡版)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #ffffff; /* 改為純白背景 */
+            color: #212529; /* 預設文字顏色為深色 */
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: #343a40; 
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #6c757d; 
+        }
+
+        .stats-banner {
+            background: #f8f9fa; /* 卡片背景改為淡灰色 */
+            border-radius: 15px;
+            border: 1px solid #dee2e6;
+            padding: 25px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: #495057; 
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #343a40;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+        }
+
+        .category-title {
+            color: #343a40;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+            display: flex;
+            align-items: center;
+        }
+
+        .category-title .icon {
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: #f8f9fa; /* 卡片背景改為淡灰色 */
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* 陰影再調淡一些 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #dee2e6; /* 保留細邊框 */
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #667eea;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ffd700;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .card-badge.new {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .card-badge.hot {
+            background: #ff8c42;
+            color: white;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-example {
+            background: #ffffff; /* 範例區塊改回白色，形成對比 */
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #555;
+            border-left: 3px solid #667eea;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .card-example.real-data {
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #e9ecef;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            color: #495057;
+        }
+
+        .tag.tested {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .legend {
+            background: #f8f9fa; /* 卡片背景改為淡灰色 */
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 10px;
+            color: #495057;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-title {
+                font-size: 1.4em;
+            }
+
+            .stats-banner {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 NetSuite AI 智能助手</h1>
+            <p>基於您實際環境的真實數據展示 - 所有示例都可立即測試</p>
+        </div>
+
+        <div class="stats-banner">
+            <div class="stat-item">
+                <span class="stat-number">1,500+</span>
+                <span class="stat-label">活躍客戶</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">300+</span>
+                <span class="stat-label">產品品項</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">200+</span>
+                <span class="stat-label">本月訂單</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">$50M+</span>
+                <span class="stat-label">年營收規模</span>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-badge" style="background: #4caf50; color: white;">✓ 可測試</span>
+                <span>使用真實數據</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-badge" style="background: #ff8c42; color: white;">進階</span>
+                <span>高級分析</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-badge" style="background: #ff6b6b; color: white;">新功能</span>
+                <span>最新特性</span>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <h2 class="category-title">
+                <span class="icon">📊</span>
+                基礎數據查詢 (立即可測試)
+            </h2>
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-badge" style="background: #4caf50; color: white;">✓ 可測試</span>
+                    <div class="card-icon">🔍</div>
+                    <h3 class="card-title">客戶資料查詢</h3>
+                    <p class="card-description">
+                        快速查找客戶基本資料、聯絡方式、交易歷史
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "查詢客戶 Karstadt Quelle 的基本資料"<br>
+                        💬 "找出 Mind the Gap 在加拿大的所有分公司"<br>
+                        💬 "Blue Pumpkin 的信用額度是多少?"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag tested">已驗證數據</span>
+                        <span class="tag">客戶: 1500+</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge" style="background: #4caf50; color: white;">✓ 可測試</span>
+                    <div class="card-icon">📈</div>
+                    <h3 class="card-title">銷售訂單分析</h3>
+                    <p class="card-description">
+                        查詢訂單狀態、金額、客戶購買模式,支援日期範圍篩選
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "9月份 Gentry Inc. 的所有訂單"<br>
+                        💬 "本季度金額超過 $100,000 的大單有哪些?"<br>
+                        💬 "查詢最近 30 天的銷售趨勢"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag tested">真實訂單</span>
+                        <span class="tag">本月: 200+筆</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge" style="background: #4caf50; color: white;">✓ 可測試</span>
+                    <div class="card-icon">💰</div>
+                    <h3 class="card-title">應收帳款追蹤</h3>
+                    <p class="card-description">
+                        即時查看客戶餘額、付款狀況、逾期帳款預警
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "Bay Media Research 目前的應收餘額"<br>
+                        💬 "哪些客戶有逾期超過 30 天的發票?"<br>
+                        💬 "本月收款情況如何?"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag tested">即時數據</span>
+                        <span class="tag">AR 管理</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge" style="background: #4caf50; color: white;">✓ 可測試</span>
+                    <div class="card-icon">📋</div>
+                    <h3 class="card-title">產品與庫存查詢</h3>
+                    <p class="card-description">
+                        查詢產品資訊、庫存水位、銷售表現
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "查詢所有家具類產品"<br>
+                        💬 "哪些產品需要補貨?"<br>
+                        💬 "本月最暢銷的前 10 項產品"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag tested">300+ 產品</span>
+                        <span class="tag">庫存管理</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <h2 class="category-title">
+                <span class="icon">🎯</span>
+                進階業務分析 (基於實際數據)
+            </h2>
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-badge hot">進階</span>
+                    <div class="card-icon">📊</div>
+                    <h3 class="card-title">客戶分群分析</h3>
+                    <p class="card-description">
+                        識別高價值客戶、分析購買模式、預測客戶需求
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "找出本季交易額前 20 名的客戶"<br>
+                        💬 "哪些客戶同時購買家具和服務?"<br>
+                        💬 "Mind the Gap 集團的所有公司總交易額"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">多維分析</span>
+                        <span class="tag">客戶洞察</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge hot">進階</span>
+                    <div class="card-icon">🌍</div>
+                    <h3 class="card-title">跨區域業務對比</h3>
+                    <p class="card-description">
+                        分析不同地區、不同子公司的業務表現
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "比較德國、日本、澳洲三地的銷售額"<br>
+                        💬 "Pineapple Republic 在美國東西岸的業績對比"<br>
+                        💬 "找出表現最好的前 3 個市場"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">地理分析</span>
+                        <span class="tag">多國數據</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge hot">進階</span>
+                    <div class="card-icon">⏱️</div>
+                    <h3 class="card-title">時間序列趨勢</h3>
+                    <p class="card-description">
+                        分析銷售趨勢、季節性模式、增長率變化
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "對比 7月、8月、9月 的銷售走勢"<br>
+                        💬 "哪個月份是業績高峰?"<br>
+                        💬 "今年 vs 去年同期的增長率"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">趨勢預測</span>
+                        <span class="tag">同比分析</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge hot">進階</span>
+                    <div class="card-icon">🎪</div>
+                    <h3 class="card-title">產品組合分析</h3>
+                    <p class="card-description">
+                        分析產品線表現、交叉銷售機會、利潤貢獻
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "哪些產品常被一起購買?"<br>
+                        💬 "服務類產品 vs 實體產品的銷售佔比"<br>
+                        💬 "找出利潤率最高的產品類別"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">產品策略</span>
+                        <span class="tag">交叉銷售</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <h2 class="category-title">
+                <span class="icon">✨</span>
+                AI 智能洞察 (真實場景應用)
+            </h2>
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-badge new">新功能</span>
+                    <div class="card-icon">🤖</div>
+                    <h3 class="card-title">異常訂單偵測</h3>
+                    <p class="card-description">
+                        自動識別異常大額訂單、價格異常、數量異常等
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "最近有哪些金額超過 $500K 的大單?"<br>
+                        💬 "找出單筆訂單金額超過客戶歷史平均的案例"<br>
+                        💬 "識別可能的數據錄入錯誤"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">智能預警</span>
+                        <span class="tag">風險管理</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge new">新功能</span>
+                    <div class="card-icon">👥</div>
+                    <h3 class="card-title">客戶健康度評分</h3>
+                    <p class="card-description">
+                        綜合分析客戶交易頻率、金額、付款記錄,評估客戶價值
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "評估 Gentry Inc. 的客戶健康度"<br>
+                        💬 "哪些客戶有流失風險?"<br>
+                        💬 "識別沉睡客戶並提供喚醒建議"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">客戶留存</span>
+                        <span class="tag">價值評估</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge new">新功能</span>
+                    <div class="card-icon">📅</div>
+                    <h3 class="card-title">智能需求預測</h3>
+                    <p class="card-description">
+                        基於歷史數據預測未來需求、優化庫存和採購
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "預測下個月 Karstadt Quelle 的訂單量"<br>
+                        💬 "根據歷史數據,Q4 應該準備多少庫存?"<br>
+                        💬 "哪些產品在特定季節需求會激增?"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">需求預測</span>
+                        <span class="tag">庫存優化</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge new">新功能</span>
+                    <div class="card-icon">💡</div>
+                    <h3 class="card-title">商業決策建議</h3>
+                    <p class="card-description">
+                        基於數據提供可執行的業務建議和優化方案
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "為什麼 9月的銷售額下降了?"<br>
+                        💬 "如何提升德國市場的業績?"<br>
+                        💬 "給出本季度最需要關注的 5 個客戶"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">決策支持</span>
+                        <span class="tag">行動建議</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge new">新功能</span>
+                    <div class="card-icon">🔗</div>
+                    <h3 class="card-title">供應商表現分析</h3>
+                    <p class="card-description">
+                        評估供應商的交貨準時率、品質、價格競爭力
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "列出所有供應商的準時交貨率"<br>
+                        💬 "哪些供應商的產品最暢銷?"<br>
+                        💬 "比較不同供應商的價格和品質"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">供應鏈</span>
+                        <span class="tag">供應商管理</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <span class="card-badge new">新功能</span>
+                    <div class="card-icon">🎨</div>
+                    <h3 class="card-title">一鍵生成商業報告</h3>
+                    <p class="card-description">
+                        用自然語言描述需求,AI 自動生成格式化的專業報告
+                    </p>
+                    <div class="card-example real-data">
+                        💬 "生成本月銷售執行報告,包含圖表"<br>
+                        💬 "製作 Top 20 客戶分析報告"<br>
+                        💬 "創建季度業務回顧 PPT 大綱"
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">自動報告</span>
+                        <span class="tag">視覺化</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <h2 class="category-title">
+                <span class="icon">🧪</span>
+                立即開始測試
+            </h2>
+            <div style="background: #f8f9fa; border-radius: 15px; padding: 40px; border: 1px solid #dee2e6; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <h3 style="color: #333; margin-bottom: 20px; font-size: 1.5em;">🎯 測試清單 - 按順序嘗試</h3>
+                
+                <div style="margin-bottom: 30px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">📝 Level 1: 基礎查詢 (5分鐘)</h4>
+                    <ol style="color: #666; line-height: 2; padding-left: 25px;">
+                        <li>"查詢客戶 Gentry Inc. 的基本資料"</li>
+                        <li>"9月份所有訂單總金額是多少?"</li>
+                        <li>"Karstadt Quelle 最近的訂單有哪些?"</li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">🔥 Level 2: 進階分析 (10分鐘)</h4>
+                    <ol style="color: #666; line-height: 2; padding-left: 25px;">
+                        <li>"比較德國、日本、澳洲市場的銷售表現"</li>
+                        <li>"找出本季交易額最高的 10 名客戶"</li>
+                        <li>"Mind the Gap 集團所有分公司的總業績"</li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">⚡ Level 3: 智能洞察 (15分鐘)</h4>
+                    <ol style="color: #666; line-height: 2; padding-left: 25px;">
+                        <li>"哪些客戶的信用額度使用率超過 80%?"</li>
+                        <li>"分析 Pineapple Republic 的購買模式和季節性"</li>
+                        <li>"生成 Top 20 客戶分析報告,包含趨勢圖"</li>
+                    </ol>
+                </div>
+
+                <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 4px solid #4caf50;">
+                    <h4 style="color: #2e7d32; margin-bottom: 10px;">💡 專家建議</h4>
+                    <p style="color: #1b5e20; line-height: 1.8;">
+                        • <strong>從簡單開始</strong>: 先熟悉基礎查詢,建立信心<br>
+                        • <strong>用真實場景</strong>: 結合你的實際業務問題測試<br>
+                        • <strong>記錄效果</strong>: 把好用的查詢記錄下來,建立團隊知識庫<br>
+                        • <strong>持續優化</strong>: 根據結果優化你的問法,AI 會越用越準
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加卡片點擊效果
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+
+        // 統計動畫
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // 頁面載入時執行動畫
+        window.addEventListener('load', () => {
+            const stats = document.querySelectorAll('.stat-number');
+            const values = [1500, 300, 200, 50];
+            stats.forEach((stat, index) => {
+                if (index === 3) {
+                    stat.textContent = '$50M+';
+                } else {
+                    animateValue(stat, 0, values[index], 2000);
+                    setTimeout(() => {
+                        stat.textContent = values[index] + '+';
+                    }, 2100);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
