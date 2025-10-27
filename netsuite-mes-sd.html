@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite-MES 介接 SA/SD 報告</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "PingFang TC", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 20px 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        header {
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #005a9c; /* Oracle Blue */
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        h1 span {
+            font-size: 1.5rem;
+            color: #555;
+            display: block;
+            margin-top: 10px;
+        }
+        h2 {
+            color: #005a9c;
+            border-bottom: 2px solid #005a9c;
+            padding-bottom: 8px;
+            margin-top: 40px;
+            font-size: 1.8rem;
+        }
+        h3 {
+            color: #333;
+            border-left: 4px solid #f0ad4e; /* Warning Yellow */
+            padding-left: 12px;
+            margin-top: 30px;
+            font-size: 1.4rem;
+        }
+        ul, ol {
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 12px;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background-color: #e9ecef;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: #c7254e; /* Reddish */
+        }
+        strong {
+            color: #004a80; /* Darker Blue */
+        }
+        .intro-para {
+            font-size: 1.1rem;
+            color: #555;
+            text-align: center;
+            background-color: #e6f7ff;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #b3e0ff;
+        }
+        .section-summary {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 20px;
+            border-left: 3px solid #ccc;
+            padding-left: 15px;
+        }
+        .key-points li {
+            background-color: #fffaf0; /* Light orange background */
+            padding: 10px 15px;
+            border: 1px solid #ffecca;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .flow-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .flow-section ul {
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>NetSuite - MES 系統介接
+                <span>系統分析與設計 (SA/SD) 報告</span>
+            </h1>
+        </header>
+
+        <main>
+            <p class="intro-para">
+                <strong>設計核心：</strong> 本次介接旨在串聯 ERP (大腦) 的「價值流」與 MES (現場神經) 的「物理流」。設計的成敗，在於我們能否建立一個高效、容錯、且顆粒度正確的「資訊緩衝區」。
+            </p>
+
+            <h2>一、 NetSuite 端：客製資料準備 (Custom Data)</h2>
+            <p class="section-summary">
+                為承接 MES 的細顆粒度資訊，NetSuite 必須擴充欄位與建立客製紀錄 (Staging Area)，作為標準交易前的「緩衝區」。
+            </p>
+
+            <h3>A. 標準紀錄之客製欄位 (Custom Fields)</h3>
+            <ul>
+                <li><strong>工單 (Work Order):</strong>
+                    <ul>
+                        <li><code>custbody_mes_status</code>: (Text) 回傳 MES 端工單狀態 (已排程, 生產中...)。</li>
+                        <li><code>custbody_mes_batch_id</code>: (Text) 回寫 MES 產生的生產批號。</li>
+                        <li><code>custbody_integration_flag</code>: (Checkbox) 標記此工單是否拋轉 MES。</li>
+                        <li><code>custbody_mes_error_msg</code>: (Free-Text) 介接錯誤訊息回寫欄位。</li>
+                    </ul>
+                </li>
+                <li><strong>品項主檔 (Item Master):</strong>
+                    <ul>
+                        <li><code>custitem_mes_relevant</code>: (Checkbox) 標記此品項 (原物料, 成品) 需同步 MES。</li>
+                    </ul>
+                </li>
+                <li><strong>工藝路線 (Routing):</strong>
+                    <ul>
+                        <li><code>custrecord_operation_mes_code</code>: (Text) 對應 MES 的特定工序/工站代碼。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>B. 額外客製紀錄 (Custom Records) - 關鍵緩衝區</h3>
+            <ul>
+                <li><strong>MES 介接日誌 (MES Integration Log):</strong>
+                    <ul>
+                        <li><strong>目的：</strong> 系統黑盒子。記錄所有 API 的 Request/Response, Status, Error。</li>
+                        <li><strong>重要性：</strong> <strong>極高。</strong> 除錯與責任釐清的唯一依據。</li>
+                    </ul>
+                </li>
+                <li><strong>MES 工時回報暫存區 (MES Labor Staging):</strong>
+                    <ul>
+                        <li><strong>目的：</strong> 接收 MES 高頻率、細顆粒度的報工（例如：每 15 分鐘）。</li>
+                        <li><strong>流程：</strong> MES 將資料寫入此暫存區，NetSuite 再透過排程 Script (每小時/每日) 彙總，產生「單筆」標準的 <code>Work Order Completion</code> 交易，避免灌爆總帳。</li>
+                    </ul>
+                </li>
+                <li><strong>MES 品管檢驗結果 (MES QC Results):</strong>
+                    <ul>
+                        <li><strong>目的：</strong> 儲存 MES 回傳的詳細 QC 數據 (良品, 不良原因, 檢驗值)。</li>
+                        <li><strong>流程：</strong> 觸發 NetSuite 產生對應的良品入庫 (WO Completion) 或報廢 (Inventory Adjustment)。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>二、 介接流程 (Flow) 與頻率 (Frequency)</h2>
+            <p class="section-summary">
+                介接流程分為四大主軸：基礎資料、計畫下達、執行回報、庫存同步。
+            </p>
+
+            <div class="flow-section">
+                <h3>A. 基礎資料同步 (Master Data Sync)</h3>
+                <ul>
+                    <li><strong>流向：</strong> <strong>NetSuite (Master) → MES (Slave)</strong></li>
+                    <li><strong>資料：</strong> 品項主檔 (Item Master), 物料清單 (BOM), 工藝路線 (Routing)</li>
+                    <li><strong>頻率：</strong> 異動時拋轉 (Event-driven) 或每日批次 (Daily Batch)</li>
+                    <li><strong>說明：</strong> NetSuite 必須是資料的唯一來源 (Single Source of Truth)。</li>
+                </ul>
+            </div>
+
+            <div class="flow-section">
+                <h3>B. 生產計畫下達 (Production Planning)</h3>
+                <ul>
+                    <li><strong>流向：</strong> <strong>NetSuite → MES</strong></li>
+                    <li><strong>資料：</strong> 工單 (Work Order)</li>
+                    <li><strong>頻率：</strong> 即時 (Real-time)</li>
+                    <li><strong>說明：</strong> 當工單狀態變更為「已核准 (Released)」時，立即觸發 API 拋轉。</li>
+                </ul>
+            </div>
+
+            <div class="flow-section">
+                <h3>C. 生產執行回報 (Production Execution Feedback) - 核心</h3>
+                <ul>
+                    <li><strong>流向：</strong> <strong>MES → NetSuite</strong></li>
+                    <li><strong>資料 1. 工單狀態回報：</strong>
+                        <ul>
+                            <li><strong>頻率：</strong> 半即時 (Near-real-time)</li>
+                            <li><strong>動作：</strong> 更新 NetSuite 工單上的 <code>custbody_mes_status</code>。</li>
+                        </ul>
+                    </li>
+                    <li><strong>資料 2. 領料/用料回報 (Material Consumption)：</strong>
+                        <ul>
+                            <li><strong>頻率：</strong> 每批次 (Per-batch) / 每班別 (Per-shift)</li>
+                            <li><strong>動作：</strong> 產生 <code>Work Order Issue</code> (工單發料) 或 <code>Inventory Adjustment</code>。</li>
+                        </ul>
+                    </li>
+                    <li><strong>資料 3. 報工/工時回報 (Labor Reporting)：</strong>
+                        <ul>
+                            <li><strong>頻率：</strong> 每班別 (Per-shift) / 每日 (Daily)</li>
+                            <li><strong>動作：</strong> 寫入「工時回報暫存區」，由 NetSuite 排程彙總。<strong>(避免直衝總帳)</strong></li>
+                        </ul>
+                    </li>
+                    <li><strong>資料 4. 完工入庫 (Finished Goods)：</strong>
+                        <ul>
+                            <li><strong>頻率：</strong> 每批次 (Per-batch) / 即時</li>
+                            <li><strong>動作：</strong> 產生 <code>Work Order Completion</code> (工單完工)，增加成品庫存。</li>
+                        </ul>
+                    </li>
+                    <li><strong>資料 5. 不良/報廢 (Scrap)：</strong>
+                        <ul>
+                            <li><strong>頻率：</strong> 每批次 (Per-batch) / 即時</li>
+                            <li><strong>動作：</strong> 寫入「QC 檢驗結果」或直接產生 <code>Inventory Adjustment</code> (報廢)。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="flow-section">
+                <h3>D. 庫存同步 (Inventory Synchronization) (選配)</h3>
+                <ul>
+                    <li><strong>流向：</strong> <strong>NetSuite → MES</strong></li>
+                    <li><strong>資料：</strong> 即時庫存量 (Inventory On-Hand)</li>
+                    <li><strong>頻率：</strong> 定時批次 (e.g., 每 30 分鐘)</li>
+                    <li><strong>說明：</strong> 讓 MES 知道 ERP 帳上的原料庫存，避免超開工單。</li>
+                </ul>
+            </div>
+
+
+            <h2>三、 關鍵注意事項 (Key Considerations)</h2>
+            <p class="section-summary">
+                魔鬼總在細節裡。以下是決定此專案成敗的五大關鍵點：
+            </p>
+
+            <ol class="key-points">
+                <li>
+                    <strong>資料主權 (Data Mastership) 必須釐清：</strong>
+                    <br>
+                    必須在 SA/SD 階段就定義好「每一筆」資料的 Master 是誰。例如：<code>BOM</code> 絕對是 NetSuite，但「機台即時參數」絕對是 MES。雙方都只能在自己的主權範圍內「寫入」，對非主權資料只能「讀取」。
+                </li>
+                <li>
+                    <strong>交易顆粒度 (Transaction Granularity) 必須統一：</strong>
+                    <br>
+                    這是最容易失敗的點。MES 傾向「即時」回報 (每分鐘)，但 NetSuite (財務) 需要「彙總」的成本 (每班/每日)。
+                    <br>
+                    <strong>核心建議：</strong> 絕對要採用「暫存區 (Staging Record)」設計。讓 MES 把細帳丟到暫存區，NetSuite 再自己排程彙總成符合財務邏輯的標準交易。
+                </li>
+                <li>
+                    <strong>錯誤處理與補償機制 (Error Handling & Reconciliation)：</strong>
+                    <br>
+                    API 呼叫失敗 (網路瞬斷/主機維護) 怎麼辦？
+                    <br>
+                    <strong>核心建議：</strong> 必須設計「重試機制 (Retry Mechanism)」。所有呼叫寫入 Log，失敗則自動重試 3 次，3 次再不過則標記為 Error，並 Email 通知 Admin 手動介入。
+                </li>
+                <li>
+                    <strong>時序性 (Sequencing) 問題：</strong>
+                    <br>
+                    絕對不能發生「完工入庫」比「工單下達」還早。也必須處理 NetSuite 工單已「結案 (Closed)」，MES 卻才回報一筆「補領料」的例外狀況。
+                    <br>
+                    <strong>核心建議：</strong> 介接邏輯必須檢查 NetSuite 端的紀錄狀態。若工單已結案，MES 的回報應被阻擋並寫入 Log。
+                </li>
+                <li>
+                    <strong>效能考量 (Performance)：</strong>
+                    <br>
+                    高頻率的 API 呼叫 (e.g., 報工) 會嚴重衝擊雙方系統。
+                    <br>
+                    <strong>核心建議：</strong> 盡可能使用「批次 (Batch)」處理。例如，報工資料不要一筆一筆 POST，改成 10 分鐘彙總一次，用一個 JSON Array 包含多筆紀錄，一次 POST 過來。
+                </li>
+            </ol>
+
+        </main>
+
+        <footer>
+            <p>NetSuite-MES Integration SA/SD Report | © 2025</p>
+        </footer>
+    </div>
+
+</body>
+</html>

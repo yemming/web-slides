@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>費用明細自動拋轉 NetSuite 系統</title>
+    <style>
+        /* --- 基本樣式 --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- 簡報容器 (16:9 比例) --- */
+        .slide-container {
+            width: 1280px; /* 16 * 80 */
+            height: 720px;  /* 9 * 80 */
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- 標題欄 --- */
+        .header {
+            padding: 24px 40px;
+            border-bottom: 2px solid #dee2e6;
+            background-color: #fdfdfd;
+            flex-shrink: 0;
+            position: absolute;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        .header h1 { margin: 0 0 6px 0; font-size: 2rem; color: #343a40; font-weight: 700; }
+        .header h3 { margin: 0; font-size: 1.1rem; color: #007bff; font-weight: 600; }
+
+        /* --- 內容區域 (左右分欄) --- */
+        .content {
+            display: flex;
+            flex: 1;
+            padding-top: 110px; /* 給標題欄留出空間 */
+            padding-bottom: 30px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .column-left {
+            flex: 0 0 45%; 
+            padding-left: 40px;
+            padding-right: 30px;
+            overflow-y: auto;
+            box-sizing: border-box; 
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+        }
+        .column-left::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .column-right {
+            flex: 0 0 55%; 
+            padding-left: 30px;
+            padding-right: 40px;
+            border-left: 2px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 水平居中 */
+            justify-content: flex-start;
+            overflow: hidden;
+            height: 100%;
+            box-sizing: border-box; 
+        }
+
+        /* --- 左欄文字樣式 --- */
+        .column-left h4 {
+            font-size: 1.4rem;
+            color: #495057;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+            font-weight: 600;
+        }
+        .advantage-block { margin-bottom: 18px; }
+        .advantage-block strong {
+            display: block;
+            font-size: 1.05rem;
+            color: #28a745;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .advantage-block p { margin: 0; font-size: 0.9rem; line-height: 1.6; color: #495057; }
+        .advantage-block .highlight { font-weight: 700; color: #dc3545; }
+
+        /* --- 右欄標題 (移除藍線) --- */
+        .column-right h4 {
+            font-size: 1.4rem;
+            color: #495057;
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-weight: 600;
+            flex-shrink: 0; /* 標題高度固定 */
+            /* * --- *** 關鍵修正：移除 border-bottom *** --- */
+            /* border-bottom: 2px solid #007bff; */ 
+            padding-bottom: 10px; 
+            width: 90%; 
+            padding-top: 10px; 
+            text-align: center;
+            box-sizing: border-box; 
+        }
+        
+        /* --- SVG 流程圖樣式 --- */
+        .flow-svg {
+            width: 100%; 
+            height: 100%; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 15px; /* 字體 15px */
+            overflow: visible;
+            flex-grow: 1; /* 填滿剩餘空間 */
+            min-height: 0; 
+        }
+        
+        .flow-node rect, .flow-node polygon, .flow-node circle {
+            stroke-width: 2px;
+            color: #212529;
+            stroke: #adb5bd;
+            transition: all 0.3s ease;
+        }
+        .flow-node text {
+            fill: #212529;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            font-weight: 600;
+            pointer-events: none;
+        }
+        .flow-edge path {
+            fill: none !important;
+            stroke: #6c757d;
+            stroke-width: 2px;
+            marker-end: url(#arrow);
+        }
+        .edge-label {
+            fill: #495057;
+            font-size: 12px;
+            text-anchor: middle;
+            font-weight: 500;
+            paint-order: stroke;
+            stroke: #ffffff;
+            stroke-width: 4px;
+            text-shadow: 0 0 3px #ffffff, 0 0 3px #ffffff, 0 0 3px #ffffff;
+        }
+        .node-start-end { fill: #d4edda; stroke: #28a745; }
+        .node-google-sheet { fill: #e6f4ea; stroke: #28a745; }
+        .node-loop-start { fill: #cce5ff; stroke: #007bff; }
+        .node-data-lookup { fill: #fff3cd; stroke: #ffc107; }
+        .node-transform { fill: #d1ecf1; stroke: #17a2b8; }
+        .node-netsuite { fill: #f0e6ff; stroke: #6f42c1; }
+        .node-decision { fill: #f8d7da; stroke: #dc3545; }
+        .node-update-success { fill: #d4edda; stroke: #28a745; }
+        .node-update-error { fill: #f8d7da; stroke: #dc3545; }
+        .node-end { fill: #d4edda; stroke: #28a745; }
+        .subgraph {
+            fill: #fdfdfd;
+            stroke: #adb5bd;
+            stroke-dasharray: 5 5;
+            stroke-width: 1px;
+        }
+        .subgraph-label {
+            font-weight: 700;
+            font-size: 14px;
+            text-anchor: middle;
+            fill: #495057;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="slide-container">
+        <div class="header">
+            <h1>費用明細自動拋轉 NetSuite 系統</h1>
+            <h3>Google Sheets 至 NetSuite 自動化流程</h3>
+        </div>
+
+        <div class="content">
+            <div class="column-left">
+                <h4>流程核心價值</h4>
+                
+                <div class="advantage-block">
+                    <strong>1. 精準資料篩選</strong>
+                    <p>
+                        自動從 Google Sheets 篩選出「狀態」為 <span class="highlight">"Approval"</span> 的費用明細，確保只有經過會計核准的資料才會被處理。
+                    </p>
+                </div>
+
+                <div class="advantage-block">
+                    <strong>2. 靈活資料映射與轉換</strong>
+                    <p>
+                        透過中間的資料處理步驟，將 Sheets 中的原始欄位，精準轉換並映射為 NetSuite Expense Report 所需的 JSON 格式，包括員工 ID、子公司 ID、開立日期、類別、金額等。
+                    </p>
+                </div>
+
+                <div class="advantage-block">
+                    <strong>3. 即時 NetSuite 拋轉</strong>
+                    <p>
+                        每筆費用明細都會透過 NetSuite API 創建為一筆 Expense Report。確保資料即時且準確地進入企業資源規劃系統。
+                    </p>
+                </div>
+
+                <div class="advantage-block">
+                    <strong>4. 狀態回寫與錯誤追蹤</strong>
+                    <p>
+                        根據 NetSuite API 的回應，自動將處理結果 (成功/失敗) 回寫到 Google Sheets，並在失敗時記錄詳細錯誤資訊，大幅提升稽核與錯誤排除效率。成功後也會記錄 NetSuite 連結。
+                    </p>
+                </div>
+
+                <div class="advantage-block">
+                    <strong>5. 批次處理能力</strong>
+                    <p>
+                        流程設計為可處理多筆費用明細的批次拋轉，高效應對大量數據同步需求。
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="column-right">
+                <h4>自動化處理流程圖</h4>
+                
+                <svg class="flow-svg" viewBox="0 -30 550 1000" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6c757d" />
+                        </marker>
+                    </defs>
+
+                    <g class="flow-node">
+                        
+                        <rect x="150" y="30" width="250" height="50" rx="25" class="node-start-end" />
+                        <text x="275" y="55">開始: 手動觸發</text>
+
+                        <rect x="150" y="120" width="250" height="50" rx="5" class="node-google-sheet" />
+                        <text x="275" y="145">讀取 Google Sheet (Approval)</text>
+
+                        <rect x="150" y="210" width="250" height="50" rx="5" class="node-loop-start" />
+                        <text x="275" y="235">Loop Over Items</text>
+
+                        
+                        <rect x="50" y="290" width="450" height="600" class="subgraph" />
+                        <text x="275" y="315" class="subgraph-label">--- 單筆費用明細處理 (迴圈內) ---</text>
+
+                        <rect x="150" y="360" width="250" height="50" rx="5" class="node-data-lookup" />
+                        <text x="275" y="385">查詢員工資料 (Sheet)</text>
+
+                        <rect x="150" y="450" width="250" height="50" rx="5" class="node-transform" />
+                        <text x="275" y="475">轉換為 NetSuite Payload</text>
+
+                        <rect x="150" y="540" width="250" height="50" rx="5" class="node-netsuite" />
+                        <text x="275" y="565">拋轉 NetSuite (Expense Report)</text>
+
+                        <polygon points="275,610 340,655 275,700 210,655" class="node-decision" />
+                        <text x="275" y="655">NetSuite 拋轉成功?</text>
+
+                        <rect x="50" y="760" width="200" height="50" rx="5" class="node-update-success" />
+                        <text x="150" y="785">回寫 Sheet: "Booking" & URL</text>
+                        
+                        <rect x="300" y="760" width="200" height="50" rx="5" class="node-update-error" />
+                        <text x="400" y="785">回寫 Sheet: "ERROR" & 錯誤訊息</text>
+
+                        <circle cx="275" cy="850" r="25" class="node-loop-start" />
+                        <text x="275" y="850" font-size="12px">迴圈結束</text>
+
+                        <rect x="150" y="930" width="250" height="50" rx="25" class="node-end" />
+                        <text x="275" y="955">結束</text>
+                    </g>
+
+                    <g class="flow-edge">
+                        
+                        <path d="M 275 80 L 275 120" />
+                        <path d="M 275 170 L 275 210" />
+                        <path d="M 275 260 L 275 360" />
+                        <path d="M 275 410 L 275 450" />
+                        <path d="M 275 500 L 275 540" />
+                        <path d="M 275 590 L 275 610" />
+                        
+                        
+                        <path d="M 210 655 L 150 655 L 150 760" />
+                        <text x="180" y="655" class="edge-label">Yes (2xx)</text>
+                        
+                        
+                        <path d="M 340 655 L 400 655 L 400 760" />
+                        <text x="370" y="655" class="edge-label">No (Error)</text>
+
+                        
+                        <path d="M 150 810 L 150 850 L 250 850 L 275 850" />
+                        <path d="M 400 810 L 400 850 L 300 850 L 275 850" />
+
+                        
+                        <path d="M 275 875 L 275 930" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

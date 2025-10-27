@@ -15,6 +15,11 @@
   - NetSuite SRP 媒合平台 Demo.html
   - NetSuite SRP 的靈魂 - 服務項目 (Service Item) 的核心價值.html
 
+- **NetSuite 整合相關**
+  - OCR 2.0流程圖.html - AI 驅動之自動化發票處理與稽核系統
+  - netsuite_integration.html - 費用明細自動拋轉 NetSuite 系統
+  - netsuite-mes-sd.html - NetSuite-MES 介接 SA/SD 報告
+
 - **財務模型**
   - 高級財務模型.html
 
