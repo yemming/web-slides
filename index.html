@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -18,63 +19,63 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         .header {
             text-align: center;
             color: white;
             margin-bottom: 40px;
         }
-        
+
         .header h1 {
             font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        
+
         .header p {
             font-size: 1.2rem;
             opacity: 0.9;
         }
-        
+
         .slides-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
-        
+
         .slide-card {
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-decoration: none;
             color: inherit;
         }
-        
+
         .slide-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
-        
+
         .slide-card h3 {
             color: #667eea;
             margin-bottom: 15px;
             font-size: 1.3rem;
         }
-        
+
         .slide-card p {
             color: #666;
             margin-bottom: 15px;
         }
-        
+
         .slide-card .category {
             display: inline-block;
             background: #667eea;
@@ -84,107 +85,123 @@
             font-size: 0.8rem;
             font-weight: bold;
         }
-        
-        .category.ai { background: #ff6b6b; }
-        .category.netsuite { background: #4ecdc4; }
-        .category.finance { background: #45b7d1; }
-        
+
+        .category.ai {
+            background: #ff6b6b;
+        }
+
+        .category.netsuite {
+            background: #4ecdc4;
+        }
+
+        .category.finance {
+            background: #45b7d1;
+        }
+
         .footer {
             text-align: center;
             color: white;
             opacity: 0.8;
             margin-top: 40px;
         }
-        
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             .slides-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>📊 Web Slides Collection</h1>
             <p>靜態網頁簡報集合 - 點擊下方卡片查看簡報內容</p>
         </div>
-        
+
         <div class="slides-grid">
             <a href="AI中階運用.html" class="slide-card">
                 <h3>AI 中階運用</h3>
                 <p>探索人工智慧的中階應用技巧與實務案例</p>
                 <span class="category ai">AI 相關</span>
             </a>
-            
+
             <a href="AI驅動的ERP轉型策略報告.html" class="slide-card">
                 <h3>AI 驅動的 ERP 轉型策略報告</h3>
                 <p>深入了解 AI 如何推動企業資源規劃系統的轉型</p>
                 <span class="category ai">AI 相關</span>
             </a>
-            
+
             <a href="NetSuite AI 智能助手.html" class="slide-card">
                 <h3>NetSuite AI 智能助手</h3>
                 <p>NetSuite 平台上的 AI 智能助手功能介紹</p>
                 <span class="category netsuite">NetSuite</span>
             </a>
-            
+
             <a href="NetSuite AI 智能助手_light.html" class="slide-card">
                 <h3>NetSuite AI 智能助手 (輕量版)</h3>
                 <p>NetSuite AI 智能助手的輕量版本介紹</p>
                 <span class="category netsuite">NetSuite</span>
             </a>
-            
+
             <a href="NetSuite SRP 互動式 Demo.html" class="slide-card">
                 <h3>NetSuite SRP 互動式 Demo</h3>
                 <p>NetSuite SRP 系統的互動式演示</p>
                 <span class="category netsuite">NetSuite SRP</span>
             </a>
-            
+
             <a href="NetSuite SRP 媒合平台 Demo.html" class="slide-card">
                 <h3>NetSuite SRP 媒合平台 Demo</h3>
                 <p>NetSuite SRP 媒合平台功能演示</p>
                 <span class="category netsuite">NetSuite SRP</span>
             </a>
-            
+
             <a href="NetSuite SRP 的靈魂 - 服務項目 (Service Item) 的核心價值.html" class="slide-card">
                 <h3>NetSuite SRP 的靈魂 - 服務項目核心價值</h3>
                 <p>深入解析 NetSuite SRP 中服務項目的核心價值</p>
                 <span class="category netsuite">NetSuite SRP</span>
             </a>
-            
+
             <a href="OCR 2.0流程圖.html" class="slide-card">
                 <h3>OCR 2.0 流程圖</h3>
                 <p>AI 驅動之自動化發票處理與稽核系統</p>
                 <span class="category netsuite">NetSuite 整合</span>
             </a>
-            
+
             <a href="netsuite_integration.html" class="slide-card">
                 <h3>費用明細自動拋轉 NetSuite 系統</h3>
                 <p>實現費用明細自動化處理與 NetSuite 系統整合</p>
                 <span class="category netsuite">NetSuite 整合</span>
             </a>
-            
+
             <a href="netsuite-mes-sd.html" class="slide-card">
                 <h3>NetSuite-MES 介接 SA/SD 報告</h3>
                 <p>NetSuite 與製造執行系統的整合方案說明</p>
                 <span class="category netsuite">NetSuite 整合</span>
             </a>
-            
+
             <a href="高級財務模型.html" class="slide-card">
                 <h3>高級財務模型</h3>
                 <p>企業財務建模的高級技巧與實務應用</p>
                 <span class="category finance">財務模型</span>
             </a>
+
+            <a href="NetSuite-Costing-Intelligence.html" class="slide-card">
+                <h3>NetSuite 庫存成本核心邏輯解析</h3>
+                <p>探索 ERP 中的財務精準度與移動平均成本演算法</p>
+                <span class="category finance">財務模型</span>
+            </a>
         </div>
-        
+
         <div class="footer">
             <p>🚀 由 GitHub Pages 提供服務 | 📧 如有問題請聯繫 yemming.yu@gmail.com</p>
         </div>
     </div>
 </body>
+
 </html>

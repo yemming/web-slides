@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite Costing Intelligence - 菁英簡報</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Outfit:wght@300;600;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --accent-color: #6366f1;
+            --secondary-color: #a855f7;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow: hidden;
+            background-image: url('netsuite_presentation_background_1768573490944.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 2rem;
+            padding: 3.5rem;
+            max-width: 1100px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: cardFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h1,
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        p {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .info-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .formula {
+            background: #000;
+            padding: 2rem;
+            border-radius: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .highlight {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        button {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s;
+            z-index: 101;
+        }
+
+        .slide-number {
+            position: fixed;
+            bottom: 2.5rem;
+            left: 3rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+
+        li::before {
+            content: '→';
+            color: var(--accent-color);
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-color);
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="slide-number" id="slideNumber">1 / 6</div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Welcome -->
+        <div class="slide active">
+            <div class="glass-card" style="text-align: center; border-bottom: 8px solid var(--accent-color);">
+                <div class="badge">NetSuite Financial Core</div>
+                <h1>庫存成本<br>核心邏輯解析</h1>
+                <p>探索企業資源規劃中的財務精準度與資料透明化</p>
+                <div style="margin-top: 3rem; font-size: 0.9rem; color: var(--text-secondary);">
+                    Presented with NetSuite Intelligence Strategy
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Costing Methods -->
+        <div class="slide">
+            <div class="glass-card">
+                <h2>核心成本門派</h2>
+                <div class="grid">
+                    <div class="info-box">
+                        <h3>平均成本 (Average)</h3>
+                        <p style="font-size: 1rem; margin-bottom: 0;">移動平均法。實時平滑價格噪音，反映動態價值的最佳選擇。</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>先進先出 (FIFO)</h3>
+                        <p style="font-size: 1rem; margin-bottom: 0;">保質期與物價上漲期的首選。確保最早資產最早轉化為成本。</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>標準成本 (Standard)</h3>
+                        <p style="font-size: 1rem; margin-bottom: 0;">製造業的標竿。透過差異分析 (Variance) 衡量生產效率。</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>最後採購價</h3>
+                        <p style="font-size: 1rem; margin-bottom: 0;">點狀數據 vs 線性平均。解釋為什麼「現在買多少」不等於「庫存值多少」。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Formula Deep Dive -->
+        <div class="slide">
+            <div class="glass-card">
+                <h2>移動平均公式演算法</h2>
+                <p>NetSuite 在每次入庫 (Item Receipt) 時自動觸發的財務計算邏輯：</p>
+                <div class="formula">
+                    New Avg = (Stock Value + New Value) / (Stock Qty + New Qty)
+                </div>
+                <div class="grid">
+                    <div style="padding-right: 2rem;">
+                        <ul style="margin-top: 1rem;">
+                            <li><span class="highlight">實時更新</span>：不需等待月底結帳</li>
+                            <li><span class="highlight">歷史權重</span>：每一筆進貨都有其影響力</li>
+                            <li><span class="highlight">穩定性</span>：抵擋單次採購異常波動</li>
+                        </ul>
+                    </div>
+                    <div class="info-box" style="border-left-color: var(--secondary-color);">
+                        <p style="font-size: 1rem; font-style: italic;">
+                            "演算法的本質，是在不確定的供應鏈中尋找確定的帳面價值。"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Real-time Impact -->
+        <div class="slide">
+            <div class="glass-card">
+                <h2>交易類型 vs 成本聯動</h2>
+                <div class="grid">
+                    <div>
+                        <h3 style="color: #10b981;">● 成本重算者 (Recalculators)</h3>
+                        <p style="font-size: 1rem;">直接改變單位成本的行為：</p>
+                        <ul style="font-size: 1rem;">
+                            <li>採購進貨 (Item Receipt)</li>
+                            <li>庫存調整 (Adjustment)</li>
+                            <li>組裝完工 (Assembly Build)</li>
+                            <li>盤點覆蓋 (Worksheet)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #f59e0b;">● 成本消費者 (Consumers)</h3>
+                        <p style="font-size: 1rem;">僅消耗數量，不改變單位售後成本：</p>
+                        <ul style="font-size: 1rem;">
+                            <li>銷售出貨 (Item Fulfillment)</li>
+                            <li>現金銷售 (Cash Sale)</li>
+                            <li>轉倉 (Inventory Transfer)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Vendor Return Case -->
+        <div class="slide">
+            <div class="glass-card">
+                <h2>專題：廠商退貨 (Vendor Return)</h2>
+                <p>為什麼退貨會產生 <span class="highlight">COGS Adjustment</span>？</p>
+                <div class="grid">
+                    <div class="info-box">
+                        <h3>1. 退貨單價與帳面差異</h3>
+                        <p style="font-size: 0.9rem;">退貨給廠商通常依照原採購單價，但庫存是用「當前平均成本」扣除。</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>2. 損益修正邏輯</h3>
+                        <p style="font-size: 0.9rem;">差額不會稀釋庫存，而是自動產生會計分錄，修正該料件的整體銷貨利潤。</p>
+                    </div>
+                </div>
+                <div
+                    style="margin-top: 2rem; padding: 1rem; background: rgba(99,102,241,0.1); border-radius: 1rem; border: 1px dashed var(--accent-color);">
+                    <p style="margin: 0; font-size: 1rem; text-align: center;">結論：退貨補償的是「錢」，調整的是「利潤」，守護的是「系統真實度」。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: COGS Adjustment -->
+        <div class="slide">
+            <div class="glass-card">
+                <h2>時空補丁：COGS Adjustment</h2>
+                <p>當系統發現「因果律」失效時，會自動啟動自我修復機制：</p>
+                <div class="grid">
+                    <div class="info-box">
+                        <h3>● 負庫存回補</h3>
+                        <p style="font-size: 0.9rem;">先銷售(估計成本)、後進貨(真實成本)。系統自動補平差額。</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>● 回溯交易 (Backdated)</h3>
+                        <p style="font-size: 0.9rem;">補錄過去的進貨單。系統重算受影響期間的所有銷售成本。</p>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top: 1.5rem; border-left-color: #ef4444;">
+                    <h3>● 同日交易排序</h3>
+                    <p style="font-size: 0.9rem;">當日進貨錄入晚於出貨，系統在數據對帳時產生的必要修正。</p>
+                </div>
+                <p style="margin-top: 1.5rem; font-size: 1rem; color: var(--accent-color); font-weight: bold;">
+                    結論：這筆分錄確保了財務報表的「絕對真實性」。</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Verification -->
+        <div class="slide">
+            <div class="glass-card" style="text-align: center;">
+                <h2>數據透明：官方報表依據</h2>
+                <p>建立在資料事實上的客戶信任</p>
+                <div class="grid" style="text-align: left;">
+                    <div class="info-box">
+                        <h3>Inventory Valuation Detail</h3>
+                        <p style="font-size: 0.9rem;">如同銀行的流水帳，詳列每一分錢如何進入與離開您的資產池。</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>Inventory Activity Detail</h3>
+                        <p style="font-size: 0.9rem;">數量的物理流動與金額的邏輯流動，確保實物與帳面完全掛鉤。</p>
+                    </div>
+                </div>
+                <h1 style="font-size: 2.5rem; margin-top: 3rem;">Q & A</h1>
+                <p>讓數據說話，讓決策精準。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn">PREV</button>
+        <button id="nextBtn" style="background: var(--accent-color);">NEXT</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progressBar');
+        const slideNumber = document.getElementById('slideNumber');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        let currentSlide = 0;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            const percent = ((currentSlide + 1) / slides.length) * 100;
+            progress.style.width = percent + '%';
+            slideNumber.innerText = (currentSlide + 1) + ' / ' + slides.length;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            }
+        });
+
+        updateSlide();
+    </script>
+</body>
+
+</html>
