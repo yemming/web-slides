@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite Bundle Strategy - 低成本高效組合方案</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Outfit:wght@300;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #0ea5e9;
+            --secondary: #2dd4bf;
+            --glass: rgba(255, 255, 255, 0.7);
+            --border: rgba(255, 255, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9 url('netsuite_bundle_strategy_bg_1768575115682.png') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--primary);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5rem;
+            opacity: 0;
+            transition: all 0.6s ease;
+            transform: translateX(100px);
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 2.5rem;
+            padding: 4rem;
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4rem;
+            line-height: 1;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, #0284c7, #0d9488);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #0369a1;
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .benefit-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border-left: 6px solid var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .benefit-box h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
+        }
+
+        .benefit-box p {
+            color: #475569;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .step-tag {
+            background: var(--accent);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 3rem;
+            right: 3rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        .formula-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px dashed #cbd5e1;
+            font-family: monospace;
+            font-weight: bold;
+            color: #0c4a6e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="progress" id="bar"></div>
+
+    <div class="slide-container">
+        <!-- Slide 1: Welcome -->
+        <div class="slide active">
+            <div class="card" style="text-align: center;">
+                <p style="text-transform: uppercase; letter-spacing: 3px; font-weight: bold; color: #64748b;">NetSuite
+                    Case Study</p>
+                <h1>高效組合策略：<br>非 BOM 模組下的精準管理</h1>
+                <p style="font-size: 1.5rem; color: #475569;">利用 Kit & Item Group 實現「選一帶多」的極速打單</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: The Logic -->
+        <div class="slide">
+            <div class="card">
+                <h2>為什麼不需要 BOM？</h2>
+                <div class="split">
+                    <div>
+                        <div class="benefit-box">
+                            <h3>1. 零成本優化資源</h3>
+                            <p>不需要購買昂貴的 Assembly & BOM 模組。透過系統內建的虛擬料件邏輯，完成同樣的庫存聯動。</p>
+                        </div>
+                        <div class="benefit-box">
+                            <h3>2. 庫存數據絕對真實</h3>
+                            <p>不論是 Kit 還是 Group，系統在出貨時會「穿透」虛擬層，直接扣除 USB (B) 和 硬體 (C) 的實體庫存。</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="benefit-box" style="border-left-color: var(--secondary);">
+                            <h3>3. 財務自動對位</h3>
+                            <p>系統自動從子料件帶入「移動平均成本」，確保每一筆組合銷售的毛利計算都精準無誤。</p>
+                        </div>
+                        <div class="formula-card">
+                            Scenario 2 = Kit (A + B)<br>
+                            Scenario 1 = Group (Kit + C)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Scenario 2 Setup -->
+        <div class="slide">
+            <div class="card">
+                <h2>情境 2：軟體包 (A 內含 B)</h2>
+                <p>最適合「對外呈現單一價格」的銷售場景</p>
+                <div class="split" style="margin-top: 2rem;">
+                    <div class="benefit-box">
+                        <div class="step-tag">解決方案：KIT / PACKAGE</div>
+                        <p>● **對外**：客戶在 Invoice 上只看到「軟體包」與一個總價。<br>● **對內**：系統自動鎖定 A 與 B 的組合關係，無法單獨修改子項內容。</p>
+                    </div>
+                    <div class="benefit-box">
+                        <div class="step-tag">打單流程</div>
+                        <p>1. 在 Sales Order 選擇軟體包 Kit。<br>2. 輸入數量 1。<br>3. 系統自動在後台凍結 1 個 USB 庫存。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Scenario 1 Setup -->
+        <div class="slide">
+            <div class="card">
+                <h2>情境 1：全方位套組 (A+B + C)</h2>
+                <p>最適合「需要展示配件明細」且「靈活調整」的場景</p>
+                <div class="split" style="margin-top: 2rem;">
+                    <div class="benefit-box">
+                        <div class="step-tag">解決方案：ITEM GROUP</div>
+                        <p>● **對外**：下單後自動展開，展示出軟體 Kit 與 硬體 C。<br>● **對內**：允許業務根據現場需求，臨時調整硬體 C 的數量或種類。</p>
+                    </div>
+                    <div class="benefit-box">
+                        <div class="step-tag">打單流程</div>
+                        <p>1. 選擇全方位套組 Group。<br>2. 系統自動展開「兩行」內容。<br>3. 業務可針對硬體 C 進行細節微調。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Summary -->
+        <div class="slide">
+            <div class="card" style="text-align: center;">
+                <h2>實戰手冊結論</h2>
+                <div class="split" style="text-align: left; margin-top: 3rem;">
+                    <div class="benefit-box">
+                        <h3>簡單就是力量</h3>
+                        <p>業務不需記住複雜的配件編號，只需記住「軟體包」與「全方位組」。系統幫你處理剩下的庫存扣減。</p>
+                    </div>
+                    <div class="benefit-box">
+                        <h3>財務風險歸零</h3>
+                        <p>不再擔心漏掉 USB 的庫存扣減，自動化的連結確保了數據的因果律。</p>
+                    </div>
+                </div>
+                <h2 style="margin-top: 3rem; font-size: 3rem;">GO AHEAD & TRY SELLING!</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="p">PREV</button>
+        <button id="n" style="background: var(--accent);">NEXT</button>
+    </div>
+
+    <script>
+        const s = document.querySelectorAll('.slide');
+        const b = document.getElementById('bar');
+        let c = 0;
+        function u() {
+            s.forEach((x, i) => x.classList.toggle('active', i === c));
+            b.style.width = ((c + 1) / s.length) * 100 + '%';
+        }
+        document.getElementById('n').onclick = () => { if (c < s.length - 1) { c++; u(); } };
+        document.getElementById('p').onclick = () => { if (c > 0) { c--; u(); } };
+        document.onkeydown = (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { if (c < s.length - 1) { c++; u(); } }
+            if (e.key === 'ArrowLeft') { if (c > 0) { c--; u(); } }
+        };
+    </script>
+</body>
+
+</html>
