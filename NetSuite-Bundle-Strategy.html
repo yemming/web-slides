@@ -204,9 +204,29 @@
                             <p>系統自動從子料件帶入「移動平均成本」，確保每一筆組合銷售的毛利計算都精準無誤。</p>
                         </div>
                         <div class="formula-card">
-                            Scenario 1 = Group (Kit + C)<br>
-                            Scenario 2 = Kit (A + B)
+                            Scenario 1 = 全方位套組 (Kit + BS_C_HQ)<br>
+                            Scenario 2 = 軟體包 (BS_A_HQ + BS_B_HQ)
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Scenario 2 Setup -->
+        <div class="slide">
+            <div class="card">
+                <h2>情境 2：軟體包 (A+B)</h2>
+                <p>最適合「對外呈現單一價格」的銷售場景</p>
+                <div class="split" style="margin-top: 2rem;">
+                    <div class="benefit-box">
+                        <div class="step-tag">解決方案：KIT / PACKAGE (`BS_KIT_SOFTWARE_PKG_HQ`)</div>
+                        <p>● **對外**：客戶在 Invoice 上只看到「軟體包」與一個總價。<br>● **對內**：系統自動連結 **BS_A_HQ** 與 **BS_B_HQ**，無法單獨修改。
+                        </p>
+                    </div>
+                    <div class="benefit-box">
+                        <div class="step-tag">打單流程</div>
+                        <p>1. 在 Sales Order 選擇 `BS_KIT_SOFTWARE_PKG_HQ`。<br>2. 輸入數量 1。<br>3. 系統自動在後台凍結 1 個 USB 庫存
+                            (**BS_B_HQ**)。</p>
                     </div>
                 </div>
             </div>
@@ -219,30 +239,12 @@
                 <p>最適合「需要展示配件明細」且「靈活調整」的場景</p>
                 <div class="split" style="margin-top: 2rem;">
                     <div class="benefit-box">
-                        <div class="step-tag">解決方案：ITEM GROUP</div>
-                        <p>● **對外**：下單後自動展開，展示出軟體 Kit 與 硬體 C。<br>● **對內**：允許業務根據現場需求，臨時調整硬體 C 的數量或種類。</p>
+                        <div class="step-tag">解決方案：ITEM GROUP (`BS_GROUP_TOTAL_SOL_HQ`)</div>
+                        <p>● **對外**：下單後自動展開，展示出軟體包 (Kit) 與 硬體 **BS_C_HQ**。<br>● **對內**：允許業務根據現場需求，隨時微調硬體數量或更換配件。</p>
                     </div>
                     <div class="benefit-box">
                         <div class="step-tag">打單流程</div>
-                        <p>1. 選擇全方位套組 Group。<br>2. 系統自動展開「兩行」內容。<br>3. 業務可針對硬體 C 進行細節微調。</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 4: Scenario 2 Setup -->
-        <div class="slide">
-            <div class="card">
-                <h2>情境 2：軟體包 (A 內含 B)</h2>
-                <p>最適合「對外呈現單一價格」的銷售場景</p>
-                <div class="split" style="margin-top: 2rem;">
-                    <div class="benefit-box">
-                        <div class="step-tag">解決方案：KIT / PACKAGE</div>
-                        <p>● **對外**：客戶在 Invoice 上只看到「軟體包」與一個總價。<br>● **對內**：系統自動鎖定 A 與 B 的組合關係，無法單獨修改子項內容。</p>
-                    </div>
-                    <div class="benefit-box">
-                        <div class="step-tag">打單流程</div>
-                        <p>1. 在 Sales Order 選擇軟體包 Kit。<br>2. 輸入數量 1。<br>3. 系統自動在後台凍結 1 個 USB 庫存。</p>
+                        <p>1. 選擇全方位套組 `BS_GROUP_TOTAL_SOL_HQ`。<br>2. 系統自動展開為多行明細。<br>3. 業務可針對硬體 **BS_C_HQ** 進行數量修正。</p>
                     </div>
                 </div>
             </div>
