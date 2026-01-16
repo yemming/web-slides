@@ -250,7 +250,59 @@
             </div>
         </div>
 
-        <!-- Slide 5: Summary -->
+        <!-- Slide 5: Selection Strategy -->
+        <div class="slide">
+            <div class="card">
+                <h2>如何選料？(決策邏輯)</h2>
+                <div class="split">
+                    <div class="benefit-box">
+                        <div class="step-tag">場景 A：標準出貨</div>
+                        <p>客戶只需要標準軟體包，且不需要看到零組件細節。</p>
+                        <hr style="margin: 1rem 0; opacity: 0.2;">
+                        <p>👉 **直接選擇** `BS_KIT_SOFTWARE_PKG_HQ`</p>
+                    </div>
+                    <div class="benefit-box">
+                        <div class="step-tag">場景 B：客製化套組</div>
+                        <p>客戶需要額外的硬體配件，或需要單獨列出各項單價。</p>
+                        <hr style="margin: 1rem 0; opacity: 0.2;">
+                        <p>👉 **選擇** `BS_GROUP_TOTAL_SOL_HQ` (系統自動展開)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Ordering Workflow -->
+        <div class="slide">
+            <div class="card">
+                <h2>如何打單？(操作標準 SOP)</h2>
+                <div class="split">
+                    <div>
+                        <div class="benefit-box">
+                            <h3>Step 1. 進入 Sales Order</h3>
+                            <p>在 Item 欄位輸入關鍵字 "BS_" 即可快速找到所有組合方案。</p>
+                        </div>
+                        <div class="benefit-box">
+                            <h3>Step 2. 數量輸入</h3>
+                            <p>只需輸入「主料件」數量，後台會依據 1:1 或 1:N 比例自動換算子項。</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="benefit-box" style="border-left-color: var(--secondary);">
+                            <h3>Step 3. 檢查庫存預佔</h3>
+                            <p>存檔後，點擊明細旁的 "Inventory Detail"，可確認 USB (**BS_B_HQ**) 是否已被精準鎖定。</p>
+                        </div>
+                        <div class="formula-card" style="font-size: 0.9rem;">
+                            [系統提示]<br>
+                            Item Group 展開後，<br>
+                            子項價格可手動調整為 0 或 特價，<br>
+                            組合總價會自動重新加總。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Summary -->
         <div class="slide">
             <div class="card" style="text-align: center;">
                 <h2>實戰手冊結論</h2>
