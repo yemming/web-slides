@@ -1,26 +1,40 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetSuite 成本核算雷區演示</title>
+    <title>NetSuite 成本核算雷區演示 v2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
-        
+
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: #f8fafc;
-            overflow: hidden; /* Prevent scrolling during presentation */
+            overflow: hidden;
         }
 
-        .slide-container {
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Scrollbar styling for the right panel */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
         }
 
-        /* Inventory Item Styles */
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
         .item-box {
             transition: all 0.5s ease-in-out;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -30,28 +44,32 @@
             animation: fadeIn 0.8s ease-out forwards;
         }
 
-        .slide-up {
-            animation: slideUp 0.5s ease-out forwards;
-        }
-
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Custom Animations for the Demo */
         .move-to-warehouse {
             animation: moveToWarehouse 1s forwards cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         @keyframes moveToWarehouse {
-            0% { transform: translateX(-150%) scale(0.5); opacity: 0; }
-            100% { transform: translateX(0) scale(1); opacity: 1; }
+            0% {
+                transform: translateX(-150%) scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
         }
 
         .move-out-return {
@@ -59,9 +77,19 @@
         }
 
         @keyframes moveOutReturn {
-            0% { transform: translateX(0) scale(1); }
-            40% { transform: translateX(0) scale(1.1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); } /* Highlight */
-            100% { transform: translateX(200%) scale(0.8); opacity: 0; }
+            0% {
+                transform: translateX(0) scale(1);
+            }
+
+            40% {
+                transform: translateX(0) scale(1.1);
+                box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+            }
+
+            100% {
+                transform: translateX(200%) scale(0.8);
+                opacity: 0;
+            }
         }
 
         .pop-loss {
@@ -69,9 +97,19 @@
         }
 
         @keyframes popLoss {
-            0% { transform: scale(0); opacity: 0; }
-            70% { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .glass-panel {
@@ -81,6 +119,7 @@
         }
     </style>
 </head>
+
 <body class="h-screen w-screen flex flex-col items-center justify-center p-4">
 
     <!-- Progress Bar -->
@@ -89,10 +128,12 @@
     </div>
 
     <!-- Main Stage -->
-    <div class="relative w-full max-w-6xl aspect-video bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 flex flex-col">
-        
+    <div
+        class="relative w-full max-w-6xl aspect-video bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 flex flex-col">
+
         <!-- Header -->
-        <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
+        <div
+            class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50 flex-none z-30 relative">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                     <i class="fas fa-cube text-white text-xl"></i>
@@ -108,30 +149,35 @@
         </div>
 
         <!-- Content Area -->
-        <div class="flex-1 relative overflow-hidden flex items-center justify-center p-8">
-            
-            <!-- Slide 1: Intro -->
-            <div id="slide-0" class="absolute inset-0 flex flex-col items-center justify-center text-center p-12 transition-all duration-500 opacity-100 transform translate-x-0">
+        <div class="flex-1 relative overflow-hidden flex items-center justify-center bg-slate-900/50">
+
+            <!-- Slide 0: Intro -->
+            <div id="slide-0"
+                class="absolute inset-0 flex flex-col items-center justify-center text-center p-12 transition-all duration-500 opacity-100 transform translate-x-0 z-20">
                 <div class="mb-8 p-6 bg-red-500/10 rounded-full border border-red-500/20 animate-pulse">
                     <i class="fas fa-exclamation-triangle text-6xl text-red-500"></i>
                 </div>
-                <h2 class="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                <h2
+                    class="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
                     為什麼買 $10 退 $10<br>公司卻虧了 $5？
                 </h2>
                 <p class="text-xl text-slate-400 max-w-2xl leading-relaxed">
                     在 ERP 的世界裡，物理上的貨物還在，但它的「身份」已經變了。<br>
-                    這是一個關於 <span class="text-white font-bold border-b-2 border-yellow-500">平均成本</span> 與 <span class="text-white font-bold border-b-2 border-yellow-500">時間</span> 的故事。
+                    這是一個關於 <span class="text-white font-bold border-b-2 border-yellow-500">平均成本</span> 與 <span
+                        class="text-white font-bold border-b-2 border-yellow-500">時間</span> 的故事。
                 </p>
-                <button onclick="nextStep()" class="mt-12 px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30 flex items-center gap-2">
+                <button onclick="nextStep()"
+                    class="mt-12 px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30 flex items-center gap-2">
                     開始演示 <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
 
             <!-- Slides 1-4: Simulation Stage -->
-            <div id="simulation-stage" class="absolute inset-0 flex flex-col opacity-0 pointer-events-none transition-all duration-500">
-                
-                <!-- Top Info Bar (Dynamic) -->
-                <div class="h-24 glass-panel m-4 rounded-xl flex items-center justify-around px-8">
+            <div id="simulation-stage"
+                class="absolute inset-0 flex flex-col opacity-0 pointer-events-none transition-all duration-500 z-10">
+
+                <!-- Top Info Bar -->
+                <div class="h-24 glass-panel m-4 rounded-xl flex items-center justify-around px-8 flex-none">
                     <div class="text-center">
                         <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">庫存數量 (Qty)</div>
                         <div id="total-qty" class="text-3xl font-bold text-white font-mono">0</div>
@@ -145,21 +191,26 @@
                     <div class="text-center relative">
                         <div class="text-slate-400 text-xs uppercase tracking-wider mb-1">系統平均成本 (Avg Cost)</div>
                         <div id="avg-cost" class="text-4xl font-bold text-yellow-400 font-mono">$0.00</div>
-                        <div id="avg-cost-badge" class="absolute -top-2 -right-12 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">UPDATED</div>
+                        <div id="avg-cost-badge"
+                            class="absolute -top-2 -right-12 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">
+                            UPDATED</div>
                     </div>
                 </div>
 
                 <!-- Main Visualization Area -->
-                <div class="flex-1 flex relative">
-                    
+                <div class="flex-1 flex min-h-0"> <!-- min-h-0 is crucial for flex overflow -->
+
                     <!-- Left: Vendor Area -->
-                    <div class="w-1/4 border-r border-slate-700 bg-slate-800/30 flex flex-col items-center justify-center p-4 relative">
-                        <div class="absolute top-4 left-4 text-slate-500 font-bold text-sm tracking-widest">SUPPLIER</div>
+                    <div
+                        class="w-1/4 border-r border-slate-700 bg-slate-800/30 flex flex-col items-center justify-center p-4 relative">
+                        <div class="absolute top-4 left-4 text-slate-500 font-bold text-sm tracking-widest">SUPPLIER
+                        </div>
                         <i class="fas fa-truck-loading text-6xl text-slate-600 mb-4"></i>
                         <div class="text-slate-400 text-sm text-center">供應商發貨/退款處</div>
-                        
+
                         <!-- AP Wallet Display -->
-                        <div id="ap-impact" class="mt-8 p-4 bg-slate-800 rounded-lg border border-slate-600 w-full opacity-0 transition-opacity">
+                        <div id="ap-impact"
+                            class="mt-8 p-4 bg-slate-800 rounded-lg border border-slate-600 w-full opacity-0 transition-opacity">
                             <div class="text-xs text-slate-400 mb-1">應付帳款 (AP) 變動</div>
                             <div id="ap-value" class="text-2xl font-mono text-green-400 font-bold">$0</div>
                         </div>
@@ -170,26 +221,29 @@
                         <div class="absolute top-4 text-slate-500 font-bold text-sm tracking-widest w-full text-center">
                             INVENTORY ASSET (資產帳戶)
                         </div>
-                        
+
                         <!-- Grid for items -->
-                        <div id="inventory-grid" class="flex flex-wrap content-end justify-center gap-4 p-8 w-full max-w-2xl h-full">
+                        <div id="inventory-grid"
+                            class="flex flex-wrap content-end justify-center gap-4 p-8 w-full max-w-2xl h-full overflow-hidden">
                             <!-- Items will be injected here via JS -->
                         </div>
 
                         <!-- Floor -->
-                        <div class="w-3/4 h-2 bg-slate-700 rounded-full mt-2 relative">
+                        <div class="w-3/4 h-2 bg-slate-700 rounded-full mt-2 relative flex-none">
                             <div class="absolute top-4 w-full text-center text-xs text-slate-600">Warehouse Floor</div>
                         </div>
                     </div>
 
-                    <!-- Right: P&L / Explanation -->
-                    <div class="w-1/3 border-l border-slate-700 bg-slate-800/30 p-6 flex flex-col justify-center">
+                    <!-- Right: P&L / Explanation (Scrollable) -->
+                    <div
+                        class="w-1/3 border-l border-slate-700 bg-slate-800/30 p-6 flex flex-col custom-scroll overflow-y-auto">
                         <div id="step-desc-container" class="space-y-6">
                             <!-- Dynamic Text Content -->
                         </div>
 
                         <!-- P&L Impact Box (Hidden initially) -->
-                        <div id="pnl-box" class="mt-8 bg-red-900/20 border border-red-500/50 rounded-xl p-6 hidden">
+                        <div id="pnl-box"
+                            class="mt-8 bg-red-900/20 border border-red-500/50 rounded-xl p-6 hidden flex-none">
                             <div class="flex items-center gap-3 mb-2">
                                 <i class="fas fa-chart-line text-red-500"></i>
                                 <h3 class="font-bold text-red-400">損益表衝擊 (P&L Impact)</h3>
@@ -202,51 +256,85 @@
                                 <span class="text-sm text-slate-300">廠商退款 (AP Debit)</span>
                                 <span class="font-mono text-green-400">+$10.00</span>
                             </div>
-                            <div class="flex justify-between items-end pt-1">
-                                <span class="font-bold text-red-400">已實現虧損 (Realized Loss)</span>
+                            <div class="flex justify-between items-end pt-1 mb-3">
+                                <span class="font-bold text-red-400">已實現虧損</span>
                                 <span class="font-mono font-bold text-2xl text-red-500">-$5.00</span>
                             </div>
+
+                            <!-- Added Accounting Details -->
+                            <div class="bg-red-950/50 rounded p-3 border border-red-500/20">
+                                <div class="text-[10px] text-red-300 uppercase font-bold mb-1">Accounting Entry (科目去向)
+                                </div>
+                                <div class="text-xs text-slate-300">
+                                    Debit (借): <span class="text-yellow-400 font-mono">COGS</span> or <span
+                                        class="text-yellow-400 font-mono">Variance Exp</span><br>
+                                    <span class="text-slate-500 italic mt-1 block">由 Item Record 上的 Account 設定決定</span>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Extra spacer for scrolling -->
+                        <div class="h-8 flex-none"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Slide 5: Conclusion -->
-            <div id="slide-end" class="absolute inset-0 flex flex-col items-center justify-center text-center p-12 transition-all duration-500 opacity-0 pointer-events-none transform translate-x-full bg-slate-900 z-10">
-                <i class="fas fa-lightbulb text-6xl text-yellow-400 mb-6 animate-bounce"></i>
-                <h2 class="text-4xl font-bold mb-8 text-white">專業顧問的結論</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full text-left">
-                    <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-red-500">
-                        <h3 class="text-xl font-bold text-red-400 mb-2">雷區警示</h3>
-                        <p class="text-slate-300">
-                            不要以為「退貨 = 還原」。在庫存成本<span class="text-white font-bold">上漲</span>的趨勢下，退貨等於是用高價值的資產換回低價值的現金。
-                        </p>
+            <div id="slide-end"
+                class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 transition-all duration-500 opacity-0 pointer-events-none transform translate-x-full bg-slate-900 z-20 custom-scroll overflow-y-auto">
+                <div class="max-w-4xl w-full flex flex-col items-center">
+                    <i class="fas fa-lightbulb text-6xl text-yellow-400 mb-6 animate-bounce"></i>
+                    <h2 class="text-4xl font-bold mb-8 text-white">專業顧問的結論</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full text-left">
+                        <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-red-500 shadow-lg">
+                            <h3 class="text-xl font-bold text-red-400 mb-2">雷區警示</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                不要以為「退貨 = 還原」。在庫存成本<span
+                                    class="text-white font-bold">上漲</span>的趨勢下，退貨等於是用高價值的資產換回低價值的現金。
+                            </p>
+                        </div>
+                        <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-green-500 shadow-lg">
+                            <h3 class="text-xl font-bold text-green-400 mb-2">操作建議</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                如果當下平均成本遠高於進價，<span class="text-white font-bold">賣掉它</span>通常比退貨划算。退貨就是變相的「認賠殺出」。
+                            </p>
+                        </div>
+                        <!-- Added Accounting Note Block -->
+                        <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-blue-500 shadow-lg md:col-span-2">
+                            <h3 class="text-xl font-bold text-blue-400 mb-2">財務設定檢查 (GL Impact)</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                務必檢查 Item Record 上的 <strong>COGS Account</strong> 與 <strong>Variance Account</strong>
+                                設定。
+                                <br>
+                                系統會將那 <span class="text-red-400">$5 虧損</span> 自動記入這些科目。若沒設好，月結時這筆帳會無處可去 (No Mapping
+                                Error)。
+                            </p>
+                        </div>
                     </div>
-                    <div class="bg-slate-800 p-6 rounded-xl border-l-4 border-green-500">
-                        <h3 class="text-xl font-bold text-green-400 mb-2">操作建議</h3>
-                        <p class="text-slate-300">
-                            如果現在的平均成本遠高於當初的進價，<span class="text-white font-bold">賣掉它</span>通常比退貨划算。退貨就是變相的「認賠殺出」。
-                        </p>
-                    </div>
+                    <button onclick="resetPresentation()"
+                        class="mt-12 px-6 py-2 border border-slate-600 text-slate-400 hover:text-white hover:border-white rounded-lg transition-colors mb-8">
+                        <i class="fas fa-redo mr-2"></i>重新演示
+                    </button>
                 </div>
-                <button onclick="resetPresentation()" class="mt-12 px-6 py-2 border border-slate-600 text-slate-400 hover:text-white hover:border-white rounded-lg transition-colors">
-                    <i class="fas fa-redo mr-2"></i>重新演示
-                </button>
             </div>
 
         </div>
 
         <!-- Controls -->
-        <div class="h-20 border-t border-slate-700 bg-slate-800/80 flex items-center justify-between px-8 backdrop-blur-sm z-20">
-            <button id="prev-btn" onclick="prevStep()" class="px-6 py-2 rounded-lg bg-slate-700 text-slate-400 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-semibold" disabled>
+        <div
+            class="h-20 border-t border-slate-700 bg-slate-800/80 flex items-center justify-between px-8 backdrop-blur-sm z-30 flex-none relative">
+            <button id="prev-btn" onclick="prevStep()"
+                class="px-6 py-2 rounded-lg bg-slate-700 text-slate-400 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-semibold"
+                disabled>
                 <i class="fas fa-chevron-left mr-2"></i> 上一步
             </button>
-            
+
             <div class="flex gap-2" id="step-indicators">
                 <!-- Dots injected via JS -->
             </div>
 
-            <button id="next-btn" onclick="nextStep()" class="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-900/50 font-semibold group">
+            <button id="next-btn" onclick="nextStep()"
+                class="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-900/50 font-semibold group">
                 下一步 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
             </button>
         </div>
@@ -255,15 +343,14 @@
     <script>
         // State Management
         let currentStep = 0;
-        const totalSteps = 5; // 0: Intro, 1: Buy $10, 2: Buy $20, 3: Explanation, 4: Return, 5: Conclusion
-        
+        const totalSteps = 5;
+
         const state = {
             qty: 0,
             value: 0,
             avgCost: 0
         };
 
-        // Text Content for each step
         const stepContent = {
             1: {
                 title: "第一批進貨",
@@ -281,19 +368,18 @@
             },
             3: {
                 title: "關鍵時刻：決定退貨",
-                text: "現在你發現庫存有點多，或者第一個產品有點瑕疵，你決定把它退給廠商。<br>廠商說：「當初你買 $10，我就退你 $10。」",
-                detail: "退款金額：$10<br><span class='text-red-400 font-bold'>但是在 NetSuite 眼裡，這顆貨現在值 $15！</span>",
+                text: "現在你發現庫存有點多，決定退一個給廠商。<br>廠商說：「當初你買 $10，我就退你 $10。」",
+                detail: "退款金額：$10<br><span class='text-red-400 font-bold'>NetSuite 系統平均成本：$15</span>",
                 action: "prepareReturn"
             },
             4: {
                 title: "雷區爆炸：實現虧損",
-                text: "退貨單一旦履行 (Fulfill)，系統必須從資產中扣除當下的平均成本 ($15)。",
-                detail: "資產減少：$15<br>現金回收：$10<br><span class='text-red-500 font-bold text-lg'>兩者差額 $5 直接認列虧損。</span>",
+                text: "履行退貨 (Item Fulfillment) 時，系統扣除當下資產價值 $15，但現金只回流 $10。",
+                detail: "資產減少：$15 (Credit Asset)<br>應付減少：$10 (Debit AP)<br><span class='text-red-500 font-bold text-lg'>差額 $5 記入損益 (Debit Expense)</span>",
                 action: "executeReturn"
             }
         };
 
-        // DOM Elements
         const slides = {
             intro: document.getElementById('slide-0'),
             stage: document.getElementById('simulation-stage'),
@@ -312,11 +398,9 @@
         };
 
         function updateUI() {
-            // Update Progress Bar
             document.getElementById('progress-bar').style.width = `${(currentStep / totalSteps) * 100}%`;
             document.getElementById('current-step-display').innerText = currentStep + 1;
-            
-            // Manage Slide Visibility
+
             if (currentStep === 0) {
                 slides.intro.style.opacity = '1';
                 slides.intro.style.pointerEvents = 'auto';
@@ -332,11 +416,10 @@
                 slides.intro.style.pointerEvents = 'none';
                 slides.stage.style.opacity = '1';
                 slides.stage.style.pointerEvents = 'auto';
-                
+
                 renderStepContent(currentStep);
             }
 
-            // Button States
             document.getElementById('prev-btn').disabled = currentStep === 0;
             document.getElementById('next-btn').style.display = currentStep === 5 ? 'none' : 'flex';
         }
@@ -348,31 +431,25 @@
             const html = `
                 <div class="fade-in">
                     <h2 class="text-2xl font-bold text-white mb-2">${content.title}</h2>
-                    <p class="text-slate-400 leading-relaxed mb-4">${content.text}</p>
+                    <p class="text-slate-400 leading-relaxed mb-4 text-sm">${content.text}</p>
                     <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-500">
                         <p class="text-slate-300 text-sm font-mono">${content.detail}</p>
                     </div>
                 </div>
             `;
             displays.descContainer.innerHTML = html;
-
-            // Trigger Specific Actions based on step direction and logic
-            // Note: In a real app we'd handle back/forward state carefully. 
-            // For this demo, we'll keep it simple linear mostly.
         }
 
         function addStockBox(price, id) {
             const box = document.createElement('div');
             box.id = `stock-${id}`;
-            box.className = 'item-box w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex flex-col items-center justify-center text-white font-bold relative move-to-warehouse';
+            box.className = 'item-box w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex flex-col items-center justify-center text-white font-bold relative move-to-warehouse flex-none';
             box.innerHTML = `
-                <i class="fas fa-box-open text-2xl mb-1 opacity-50"></i>
-                <span>$${price}</span>
-                <span class="text-[10px] text-blue-200 absolute bottom-1">Cost ID: ${id}</span>
+                <i class="fas fa-box-open text-xl mb-1 opacity-50"></i>
+                <span class="text-sm">$${price}</span>
             `;
             displays.grid.appendChild(box);
 
-            // Update Math
             state.qty += 1;
             state.value += price;
             state.avgCost = state.value / state.qty;
@@ -380,22 +457,18 @@
         }
 
         function removeStockBox() {
-            // Find the FIRST box (FIFO assumption for physical movement, though cost is Avg)
             const box = displays.grid.firstElementChild;
             if (box) {
                 box.classList.remove('move-to-warehouse');
-                box.classList.add('move-out-return'); // Animation to left
-                
-                // Visual cleanup after animation
+                box.classList.add('move-out-return');
+
                 setTimeout(() => {
-                    if(box.parentNode) box.parentNode.removeChild(box);
+                    if (box.parentNode) box.parentNode.removeChild(box);
                 }, 1400);
 
-                // Update Math
-                const costImpact = state.avgCost; // The TRAP: removing at Avg Cost
+                const costImpact = state.avgCost;
                 state.qty -= 1;
                 state.value -= costImpact;
-                // Avg cost remains same mathematically after removal (15/1 = 15), but total value drops
                 updateDisplayMath();
             }
         }
@@ -404,8 +477,7 @@
             displays.qty.innerText = state.qty;
             displays.value.innerText = `$${state.value.toFixed(2)}`;
             displays.avg.innerText = `$${state.avgCost.toFixed(2)}`;
-            
-            // Flash badge
+
             displays.badge.classList.remove('hidden');
             setTimeout(() => displays.badge.classList.add('hidden'), 1000);
         }
@@ -413,10 +485,8 @@
         function nextStep() {
             if (currentStep >= totalSteps) return;
             currentStep++;
-            
-            // Execute Step Logic
+
             if (currentStep === 1) {
-                // Reset Grid if coming from start
                 displays.grid.innerHTML = '';
                 state.qty = 0; state.value = 0; state.avgCost = 0;
                 displays.pnl.classList.add('hidden');
@@ -426,17 +496,14 @@
                 addStockBox(20, 2);
             }
             else if (currentStep === 3) {
-                // Prepare visual: Highlight the items maybe?
                 const items = document.querySelectorAll('.item-box');
                 items.forEach(el => el.classList.add('ring-2', 'ring-yellow-400'));
             }
             else if (currentStep === 4) {
                 removeStockBox();
-                // Show AP Impact
                 displays.ap.style.opacity = '1';
-                displays.apValue.innerText = "-$10.00"; // Reducing AP
-                
-                // Show P&L Impact with delay matching animation
+                displays.apValue.innerText = "-$10.00";
+
                 setTimeout(() => {
                     displays.pnl.classList.remove('hidden');
                     displays.pnl.classList.add('pop-loss');
@@ -448,25 +515,20 @@
 
         function prevStep() {
             if (currentStep <= 0) return;
-            
-            // Reverse Logic (Simplified for Demo)
+
             if (currentStep === 5) {
-                // Hide End Slide
+                // Return from end
             } else if (currentStep === 4) {
-                // Hide P&L
                 displays.pnl.classList.add('hidden');
                 displays.ap.style.opacity = '0';
-                // Add box back? (Complex to reverse perfectly in simple script, better to reset)
-                // For simplicity in this demo, we advise user to reset if they go back too far or just text changes
             }
             else if (currentStep === 2) {
-               // Remove second box
-               const boxes = displays.grid.children;
-               if(boxes.length > 1) {
-                   displays.grid.removeChild(boxes[1]);
-                   state.qty = 1; state.value = 10; state.avgCost = 10;
-                   updateDisplayMath();
-               }
+                const boxes = displays.grid.children;
+                if (boxes.length > 1) {
+                    displays.grid.removeChild(boxes[1]);
+                    state.qty = 1; state.value = 10; state.avgCost = 10;
+                    updateDisplayMath();
+                }
             }
 
             currentStep--;
@@ -484,9 +546,9 @@
             updateUI();
         }
 
-        // Init
         updateUI();
 
     </script>
 </body>
+
 </html>
